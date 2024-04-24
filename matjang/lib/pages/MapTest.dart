@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
+import 'package:matjang/model/matjip.dart';
 
 class MapTest extends StatefulWidget {
   const MapTest({super.key});
@@ -16,6 +19,7 @@ class _MapTestState extends State<MapTest> {
   String message = "";
   String address2 = "";
   String request = "";
+  var matjipList;
 
   coord2Address(LatLng lng) async {
     var url =
@@ -23,8 +27,11 @@ class _MapTestState extends State<MapTest> {
     var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
 
     var response = await http.get(Uri.parse(url), headers: header);
+    if (response.statusCode == 200) {
+      var result = jsonDecode(response.body)["documents"];
 
-    print(response.body);
+      matjipList = MatJipList.fromJson(result).matjips ?? <MatJip>[];
+    }
   }
 
   @override
@@ -47,7 +54,9 @@ class _MapTestState extends State<MapTest> {
           }),
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
             if (dragType == DragType.end) {
-              coord2Address(latLng);
+              await coord2Address(latLng);
+
+              print(matjipList);
             }
           },
           currentLevel: 4,
