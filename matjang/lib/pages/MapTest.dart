@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:http/http.dart' as http;
 
 class MapTest extends StatefulWidget {
   const MapTest({super.key});
@@ -10,33 +12,19 @@ class MapTest extends StatefulWidget {
 
 class _MapTestState extends State<MapTest> {
   late KakaoMapController mapController;
+  TextEditingController searchField = TextEditingController();
   String message = "";
   String address2 = "";
+  String request = "";
 
   coord2Address(LatLng lng) async {
-    final request = Coord2AddressRequest(
-      x: lng.longitude,
-      y: lng.latitude,
-    );
-    final response = await mapController.coord2Address(request);
-    print("waiting done");
-    final coord2address = response.list.first;
+    var url =
+        "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=FD6&x=${lng.longitude}&y=${lng.latitude}&radius=1000";
+    var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
 
-    print("response: $response \n coor2address: $coord2address");
+    var response = await http.get(Uri.parse(url), headers: header);
 
-    final request2 = Coord2RegionCodeRequest(
-      x: lng.longitude,
-      y: lng.latitude,
-    );
-    final response2 = await mapController.coord2RegionCode(request2);
-    final coord2RegionCode = response2.list.first;
-
-    setState(() {
-      address2 = '';
-      if (coord2address.roadAddress != null) {
-        address2 += '도로명주소 : ${coord2address.roadAddress?.addressName}\n';
-      }
-    });
+    print(response.body);
   }
 
   @override
@@ -45,20 +33,46 @@ class _MapTestState extends State<MapTest> {
       appBar: AppBar(title: const Text("맛장")),
       body: Stack(children: [
         KakaoMap(
+          center: LatLng(37.4826364, 126.501144),
           onMapCreated: ((controller) async {
             mapController = controller;
             var center = await mapController.getCenter();
 
-            coord2Address(center);
+            // coord2Address(center);
           }),
           onMapTap: ((lag) async {
             await mapController.getCenter();
-            coord2Address(lag);
+            // coord2Address(lag);
             setState(() {});
           }),
-          currentLevel: 6,
+          onDragChangeCallback: (latLng, zoomLevel, dragType) async {
+            if (dragType == DragType.end) {
+              coord2Address(latLng);
+            }
+          },
+          currentLevel: 4,
           zoomControl: true,
           zoomControlPosition: ControlPosition.bottomRight,
+        ),
+        Container(
+          // width: MediaQuery.of(context).size.width,
+          margin: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.8),
+            // borderRadius: BorderRadius.circular(2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                style: const TextStyle(fontSize: 20),
+                controller: searchField,
+                decoration: const InputDecoration(hintText: "검색어를 입력하세요"),
+              ),
+            ],
+          ),
         ),
       ]),
     );
