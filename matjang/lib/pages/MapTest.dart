@@ -19,7 +19,8 @@ class _MapTestState extends State<MapTest> {
   String message = "";
   String address2 = "";
   String request = "";
-  var matjipList;
+  List<MatJip> matjipList = [];
+  Set<Marker> markers = {};
 
   coord2Address(LatLng lng) async {
     var url =
@@ -28,9 +29,7 @@ class _MapTestState extends State<MapTest> {
 
     var response = await http.get(Uri.parse(url), headers: header);
     if (response.statusCode == 200) {
-      var result = jsonDecode(response.body)["documents"];
-
-      matjipList = MatJipList.fromJson(result).matjips ?? <MatJip>[];
+      matjipList = MatJip().matjipDatasFromJson(response.body);
     }
   }
 
@@ -49,19 +48,46 @@ class _MapTestState extends State<MapTest> {
           }),
           onMapTap: ((lag) async {
             await mapController.getCenter();
-            // coord2Address(lag);
             setState(() {});
           }),
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
             if (dragType == DragType.end) {
+              matjipList = [];
+              markers.clear();
               await coord2Address(latLng);
 
-              print(matjipList);
+              for (var i in matjipList) {
+                markers.add(Marker(
+                  markerId: UniqueKey().toString(),
+                  latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                ));
+              }
+
+              setState(() {});
+
+              for (var i = 0; i < matjipList.length; i++) {
+                print("$i번째 = ${matjipList[i].place_name}");
+              }
             }
           },
           currentLevel: 4,
           zoomControl: true,
           zoomControlPosition: ControlPosition.bottomRight,
+          markers: markers.toList(),
+        ),
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/images/marker.png',
+                width: 40,
+                height: 40,
+              ),
+              const SizedBox(width: 0, height: 0),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
         Container(
           // width: MediaQuery.of(context).size.width,
