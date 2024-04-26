@@ -1,5 +1,7 @@
 import UIKit
 import Flutter
+import KakaoSDKCommon
+
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -15,6 +17,10 @@ import Flutter
     // default:
     //     break
     // }
+      
+    let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
+    KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
+
 
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
