@@ -1,14 +1,18 @@
 import 'dart:convert';
 
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+
 class MatJip {
   String? place_name = "";
   String? x = "";
   String? y = "";
+  String? address = "";
 
   MatJip({
     this.place_name,
     this.x,
     this.y,
+    this.address,
   });
 
   factory MatJip.fromJson(Map<String, dynamic> json) {
@@ -16,6 +20,7 @@ class MatJip {
       place_name: json["place_name"],
       x: json['x'],
       y: json['y'],
+      address: json['road_address_name'],
     );
   }
 

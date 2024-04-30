@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:matjang/model/matjip.dart';
+import 'package:matjang/pages/detailBottomSheet.dart';
 
 class MapTest extends StatefulWidget {
   const MapTest({super.key});
@@ -64,6 +66,8 @@ class _MapTestState extends State<MapTest> {
             setState(() {});
           }),
           onMarkerTap: (markerId, latLng, zoomLevel) {
+            String? address;
+            String? placeName;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -72,7 +76,18 @@ class _MapTestState extends State<MapTest> {
                 marker = i;
               }
             }
-            print(marker.infoWindowContent);
+            for (var i in matjipList) {
+              if (double.parse(i.x!) == marker.latLng.longitude &&
+                  double.parse(i.y!) == marker.latLng.latitude) {
+                address = i.address;
+                placeName = i.place_name;
+              }
+            }
+
+            Get.bottomSheet(DetailBottomSheet(
+              address: address,
+              place_name: placeName,
+            ));
           },
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
             if (dragType == DragType.end) {
