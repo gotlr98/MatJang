@@ -19,6 +19,7 @@ class _MapTestState extends State<MapTest> {
   String message = "";
   String address2 = "";
   String request = "";
+  String textContent = "";
   List<MatJip> matjipList = [];
   Set<Marker> markers = {};
   LatLng center = LatLng(37.4826364, 126.501144);
@@ -62,6 +63,17 @@ class _MapTestState extends State<MapTest> {
             await mapController.getCenter();
             setState(() {});
           }),
+          onMarkerTap: (markerId, latLng, zoomLevel) {
+            Marker marker = Marker(
+                markerId: "0",
+                latLng: LatLng(latLng.latitude, latLng.longitude));
+            for (var i in markers) {
+              if (markerId == i.markerId) {
+                marker = i;
+              }
+            }
+            print(marker.infoWindowContent);
+          },
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
             if (dragType == DragType.end) {
               matjipList = [];
@@ -72,6 +84,7 @@ class _MapTestState extends State<MapTest> {
                 markers.add(Marker(
                   markerId: UniqueKey().toString(),
                   latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                  infoWindowContent: i.place_name!,
                 ));
               }
 
@@ -117,6 +130,11 @@ class _MapTestState extends State<MapTest> {
                 style: const TextStyle(fontSize: 20),
                 controller: searchField,
                 decoration: const InputDecoration(hintText: "검색어를 입력하세요"),
+                onChanged: (value) {
+                  setState(() {
+                    textContent = searchField.text;
+                  });
+                },
               ),
               ElevatedButton(
                   onPressed: () async {
@@ -129,6 +147,7 @@ class _MapTestState extends State<MapTest> {
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
                         latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                        infoWindowContent: i.place_name!,
                       ));
                       if (count == 0) {
                         center = LatLng(double.parse(i.y!), double.parse(i.x!));
@@ -137,6 +156,8 @@ class _MapTestState extends State<MapTest> {
                     }
 
                     mapController.setCenter(center);
+
+                    searchField.clear();
 
                     setState(() {});
                   },
