@@ -1,6 +1,5 @@
 import UIKit
 import Flutter
-import KakaoSDKCommon
 
 
 @UIApplicationMain
@@ -18,8 +17,8 @@ import KakaoSDKCommon
     //     break
     // }
       
-    let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
-    KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
+    // let kakaoAppKey = Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] ?? ""
+    // KakaoSDK.initSDK(appKey: kakaoAppKey as! String)
 
 
     GeneratedPluginRegistrant.register(with: self)

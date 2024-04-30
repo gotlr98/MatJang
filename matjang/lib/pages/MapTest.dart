@@ -21,12 +21,24 @@ class _MapTestState extends State<MapTest> {
   String request = "";
   List<MatJip> matjipList = [];
   Set<Marker> markers = {};
+  LatLng center = LatLng(37.4826364, 126.501144);
 
-  coord2Address(LatLng lng) async {
+  coord2Category(LatLng lng) async {
     var url =
         "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=FD6&x=${lng.longitude}&y=${lng.latitude}&radius=1000";
     var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
 
+    var response = await http.get(Uri.parse(url), headers: header);
+    if (response.statusCode == 200) {
+      matjipList = MatJip().matjipDatasFromJson(response.body);
+    }
+  }
+
+  coord2Keyword(String keyword) async {
+    var url =
+        "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword";
+
+    var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
     var response = await http.get(Uri.parse(url), headers: header);
     if (response.statusCode == 200) {
       matjipList = MatJip().matjipDatasFromJson(response.body);
@@ -39,7 +51,7 @@ class _MapTestState extends State<MapTest> {
       appBar: AppBar(title: const Text("맛장")),
       body: Stack(children: [
         KakaoMap(
-          center: LatLng(37.4826364, 126.501144),
+          center: center,
           onMapCreated: ((controller) async {
             mapController = controller;
             var center = await mapController.getCenter();
@@ -54,7 +66,7 @@ class _MapTestState extends State<MapTest> {
             if (dragType == DragType.end) {
               matjipList = [];
               markers.clear();
-              await coord2Address(latLng);
+              await coord2Category(latLng);
 
               for (var i in matjipList) {
                 markers.add(Marker(
@@ -75,20 +87,20 @@ class _MapTestState extends State<MapTest> {
           zoomControlPosition: ControlPosition.bottomRight,
           markers: markers.toList(),
         ),
-        Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                'assets/images/marker.png',
-                width: 40,
-                height: 40,
-              ),
-              const SizedBox(width: 0, height: 0),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
+        // Center(
+        //   child: Column(
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: [
+        //       Image.asset(
+        //         'assets/images/marker.png',
+        //         width: 40,
+        //         height: 40,
+        //       ),
+        //       const SizedBox(width: 0, height: 0),
+        //       const SizedBox(height: 40),
+        //     ],
+        //   ),
+        // ),
         Container(
           // width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.all(15),
@@ -106,6 +118,29 @@ class _MapTestState extends State<MapTest> {
                 controller: searchField,
                 decoration: const InputDecoration(hintText: "검색어를 입력하세요"),
               ),
+              ElevatedButton(
+                  onPressed: () async {
+                    var count = 0;
+                    matjipList = [];
+                    markers.clear();
+                    await coord2Keyword(searchField.text);
+
+                    for (var i in matjipList) {
+                      markers.add(Marker(
+                        markerId: UniqueKey().toString(),
+                        latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                      ));
+                      if (count == 0) {
+                        center = LatLng(double.parse(i.y!), double.parse(i.x!));
+                        count += 1;
+                      }
+                    }
+
+                    mapController.setCenter(center);
+
+                    setState(() {});
+                  },
+                  child: const Icon(Icons.search))
             ],
           ),
         ),
