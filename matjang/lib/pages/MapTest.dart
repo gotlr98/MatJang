@@ -51,7 +51,28 @@ class _MapTestState extends State<MapTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("맛장")),
+      appBar: AppBar(
+        title: const Text("맛장"),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            const UserAccountsDrawerHeader(
+                accountName: Text("guest"), accountEmail: Text("Guest@eeee")),
+            ListTile(
+              leading: Icon(
+                Icons.home,
+                color: Colors.grey[850],
+              ),
+              title: const Text('Home'),
+              onTap: () {
+                print('Home is clicked');
+              },
+              trailing: const Icon(Icons.add),
+            ),
+          ],
+        ),
+      ),
       body: Stack(children: [
         KakaoMap(
           center: center,
@@ -84,10 +105,28 @@ class _MapTestState extends State<MapTest> {
               }
             }
 
-            Get.bottomSheet(DetailBottomSheet(
-              address: address,
-              place_name: placeName,
-            ));
+            if (address != null && placeName != null) {
+              Get.bottomSheet(SizedBox(
+                height: 200,
+                child: DetailBottomSheet(
+                  address: address,
+                  place_name: placeName,
+                ),
+              ));
+            } else {
+              Get.dialog(
+                AlertDialog(
+                  title: const Text('Error'),
+                  content: const Text('dialog content'),
+                  actions: [
+                    TextButton(
+                      onPressed: Get.back,
+                      child: const Text('닫기'),
+                    ),
+                  ],
+                ),
+              );
+            }
           },
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
             if (dragType == DragType.end) {
@@ -99,15 +138,11 @@ class _MapTestState extends State<MapTest> {
                 markers.add(Marker(
                   markerId: UniqueKey().toString(),
                   latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
-                  infoWindowContent: i.place_name!,
+                  // infoWindowContent: i.place_name!,
                 ));
               }
 
               setState(() {});
-
-              for (var i = 0; i < matjipList.length; i++) {
-                print("$i번째 = ${matjipList[i].place_name}");
-              }
             }
           },
           currentLevel: 4,
@@ -115,20 +150,6 @@ class _MapTestState extends State<MapTest> {
           zoomControlPosition: ControlPosition.bottomRight,
           markers: markers.toList(),
         ),
-        // Center(
-        //   child: Column(
-        //     mainAxisSize: MainAxisSize.min,
-        //     children: [
-        //       Image.asset(
-        //         'assets/images/marker.png',
-        //         width: 40,
-        //         height: 40,
-        //       ),
-        //       const SizedBox(width: 0, height: 0),
-        //       const SizedBox(height: 40),
-        //     ],
-        //   ),
-        // ),
         Container(
           // width: MediaQuery.of(context).size.width,
           margin: const EdgeInsets.all(15),
