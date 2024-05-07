@@ -47,3 +47,4 @@ kakaomap.html*
 *.xcconfig
 GoogleService-Info.plist
 google-services.json
+firebase_options.dart
