@@ -7,12 +7,14 @@ class MatJip {
   String? x = "";
   String? y = "";
   String? address = "";
+  String? category = "";
 
   MatJip({
     this.place_name,
     this.x,
     this.y,
     this.address,
+    this.category,
   });
 
   factory MatJip.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class MatJip {
       x: json['x'],
       y: json['y'],
       address: json['road_address_name'],
+      category: json['category_name'],
     );
   }
 

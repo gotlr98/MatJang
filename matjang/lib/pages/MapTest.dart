@@ -56,18 +56,26 @@ class _MapTestState extends State<MapTest> {
       ),
       drawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.zero,
           children: <Widget>[
-            const UserAccountsDrawerHeader(
-                accountName: Text("guest"), accountEmail: Text("Guest@eeee")),
+            UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40.0),
+                      bottomRight: Radius.circular(40.0)),
+                ),
+                accountName:
+                    const Text("guest", style: TextStyle(color: Colors.black)),
+                accountEmail: const Text("Guest@eeee",
+                    style: TextStyle(color: Colors.black))),
             ListTile(
               leading: Icon(
                 Icons.home,
                 color: Colors.grey[850],
               ),
               title: const Text('Home'),
-              onTap: () {
-                print('Home is clicked');
-              },
+              onTap: () {},
               trailing: const Icon(Icons.add),
             ),
           ],
@@ -89,6 +97,7 @@ class _MapTestState extends State<MapTest> {
           onMarkerTap: (markerId, latLng, zoomLevel) {
             String? address;
             String? placeName;
+            String? categoryName;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -102,6 +111,7 @@ class _MapTestState extends State<MapTest> {
                   double.parse(i.y!) == marker.latLng.latitude) {
                 address = i.address;
                 placeName = i.place_name;
+                categoryName = i.category?.split(">").last;
               }
             }
 
@@ -111,6 +121,7 @@ class _MapTestState extends State<MapTest> {
                 child: DetailBottomSheet(
                   address: address,
                   place_name: placeName,
+                  category: categoryName,
                 ),
               ));
             } else {
@@ -158,19 +169,20 @@ class _MapTestState extends State<MapTest> {
             color: Colors.white.withOpacity(0.8),
             // borderRadius: BorderRadius.circular(2),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextField(
-                style: const TextStyle(fontSize: 20),
-                controller: searchField,
-                decoration: const InputDecoration(hintText: "검색어를 입력하세요"),
-                onChanged: (value) {
-                  setState(() {
-                    textContent = searchField.text;
-                  });
-                },
+              Expanded(
+                child: TextField(
+                  style: const TextStyle(fontSize: 20),
+                  controller: searchField,
+                  decoration: const InputDecoration(hintText: "검색어를 입력하세요"),
+                  onChanged: (value) {
+                    setState(() {
+                      textContent = searchField.text;
+                    });
+                  },
+                ),
               ),
               ElevatedButton(
                   onPressed: () async {
