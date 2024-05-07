@@ -29,6 +29,7 @@ class SocialLogin {
 
     var user = await UserApi.instance.me();
     String? email = user.kakaoAccount?.email;
+    print(email);
     // await UserApi.instance.un
     return email != ''
         ? UserModel(email: email!, type: SocialType.Kakao)

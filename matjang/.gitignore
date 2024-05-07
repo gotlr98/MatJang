@@ -45,3 +45,5 @@ app.*.map.json
 .env*
 kakaomap.html*
 *.xcconfig
+GoogleService-Info.plist
+google-services.json
