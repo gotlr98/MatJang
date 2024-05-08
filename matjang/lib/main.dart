@@ -7,10 +7,11 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:matjang/firebase_options.dart';
 
+import 'firebase_options.dart';
 import 'pages/login.dart';
 import 'pages/mapTest.dart';
+import 'pages/test.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,9 @@ Future<void> main() async {
   );
 
   await dotenv.load(fileName: ".env");
-  KakaoSdk.init(nativeAppKey: dotenv.env["NATIVE_APP_KEY"]);
+  KakaoSdk.init(
+      nativeAppKey: dotenv.env["NATIVE_APP_KEY"],
+      javaScriptAppKey: dotenv.env["JAVA_APP_KEY"]);
   AuthRepository.initialize(
       appKey: dotenv.env["APP_KEY"]!, baseUrl: dotenv.env["BASE_URL"]!);
   runApp(const MyApp());
@@ -34,6 +37,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const GetMaterialApp(home: Login());
+    return GetMaterialApp(
+      home: const Login(),
+      initialRoute: '/',
+      getPages: [
+        GetPage(name: '/', page: () => const Login()),
+        GetPage(name: '/test', page: () => const Test()),
+      ],
+    );
   }
 }
