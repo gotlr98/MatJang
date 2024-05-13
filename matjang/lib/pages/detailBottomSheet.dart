@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:matjang/model/matjip.dart';
 import 'package:matjang/model/usermodel.dart';
+import 'package:provider/provider.dart';
 
 class DetailBottomSheet extends StatelessWidget {
-  DetailBottomSheet({super.key, this.place_name, this.address, this.category});
+  DetailBottomSheet(
+      {super.key,
+      this.place_name,
+      this.address,
+      this.category,
+      this.x,
+      this.y});
   String? place_name;
   String? address;
   String? category;
+  String? x;
+  String? y;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +61,18 @@ class DetailBottomSheet extends StatelessWidget {
                         content: const Text("맛집에 등록하시겠습니까?"),
                         actions: [
                           TextButton(
-                              onPressed: () {}, child: const Text("등록하기")),
+                              onPressed: () {
+                                Provider.of<UserModel>(context, listen: false)
+                                    .addList(MatJip(
+                                        place_name: place_name,
+                                        x: x,
+                                        y: y,
+                                        address: address,
+                                        category: category));
+
+                                Get.back();
+                              },
+                              child: const Text("등록하기")),
                           TextButton(
                               onPressed: () {
                                 Get.back();

@@ -7,6 +7,9 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
+import 'package:provider/provider.dart';
+
+import '../model/usermodel.dart';
 
 class MapTest extends StatefulWidget {
   const MapTest({super.key});
@@ -66,18 +69,27 @@ class _MapTestState extends State<MapTest> {
                       bottomRight: Radius.circular(40.0)),
                 ),
                 accountName:
-                    const Text("guest", style: TextStyle(color: Colors.black)),
-                accountEmail: const Text("Guest@eeee",
-                    style: TextStyle(color: Colors.black))),
+                    const Text("Hi", style: TextStyle(color: Colors.black)),
+                accountEmail: Text(Get.arguments["email"],
+                    style: const TextStyle(color: Colors.black))),
             ListTile(
               leading: Icon(
                 Icons.home,
                 color: Colors.grey[850],
               ),
               title: const Text('Home'),
-              onTap: () {},
+              onTap: () {
+                print(
+                    Provider.of<UserModel>(context, listen: false).matjipList);
+              },
               trailing: const Icon(Icons.add),
             ),
+            // Scaffold(
+            //     body: Consumer<UserModel>(builder: (context, value, child) {
+            //   return Column(
+            //     children: [Text(value.matjipList.toString())],
+            //   );
+            // }))
           ],
         ),
       ),
@@ -98,6 +110,8 @@ class _MapTestState extends State<MapTest> {
             String? address;
             String? placeName;
             String? categoryName;
+            String? x;
+            String? y;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -112,6 +126,8 @@ class _MapTestState extends State<MapTest> {
                 address = i.address;
                 placeName = i.place_name;
                 categoryName = i.category?.split(">").last;
+                x = i.x;
+                y = i.y;
               }
             }
 
@@ -122,6 +138,8 @@ class _MapTestState extends State<MapTest> {
                   address: address,
                   place_name: placeName,
                   category: categoryName,
+                  x: x,
+                  y: y,
                 ),
               ));
             } else {

@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:matjang/model/usermodel.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'pages/login.dart';
@@ -26,7 +28,9 @@ Future<void> main() async {
       javaScriptAppKey: dotenv.env["JAVA_APP_KEY"]);
   AuthRepository.initialize(
       appKey: dotenv.env["APP_KEY"]!, baseUrl: dotenv.env["BASE_URL"]!);
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
 }
 
 // 지도 초기화하기
@@ -37,13 +41,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      home: const Login(),
-      initialRoute: '/',
-      getPages: [
-        GetPage(name: '/', page: () => const Login()),
-        GetPage(name: '/test', page: () => const Test()),
-      ],
+    return ChangeNotifierProvider(
+      create: (context) => UserModel(type: SocialType.Guest),
+      child: GetMaterialApp(
+        home: const Login(),
+        initialRoute: '/',
+        getPages: [
+          GetPage(name: '/', page: () => const Login()),
+          GetPage(name: '/test', page: () => const Test()),
+          GetPage(name: '/mapTest', page: () => const MapTest()),
+        ],
+      ),
     );
   }
 }

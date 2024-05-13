@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:matjang/model/usermodel.dart';
+import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SocialLogin {
@@ -23,7 +24,9 @@ class SocialLogin {
 
   Future<UserModel?> _kakao() async {
     bool isInstalled = await isKakaoTalkInstalled();
-    var store = const FlutterSecureStorage();
+    // const options =
+    //     IOSOptions(accessibility: KeychainAccessibility.first_unlock);
+    // var store = const FlutterSecureStorage(iOptions: options);
 
     isInstalled
         ? await UserApi.instance.loginWithKakaoTalk()
@@ -31,10 +34,6 @@ class SocialLogin {
 
     var user = await UserApi.instance.me();
     String? email = user.kakaoAccount?.email;
-
-    await store.write(key: "login", value: email);
-
-    print(store.readAll());
 
     return email != ''
         ? UserModel(email: email!, type: SocialType.Kakao)
