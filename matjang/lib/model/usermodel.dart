@@ -7,7 +7,7 @@ enum SocialType { Kakao, Apple, Guest }
 class UserModel with ChangeNotifier {
   String? email;
   SocialType type = SocialType.Guest;
-  final List<MatJip> matjipList = [];
+  List<MatJip> matjipList = [];
   List<MatJip> get _matjipList => matjipList;
   String? get _email => email;
   SocialType get _type => type;
@@ -20,6 +20,10 @@ class UserModel with ChangeNotifier {
   void addList(MatJip matjip) {
     matjipList.add(matjip);
     notifyListeners();
+  }
+
+  void getListFromFirebase(List<MatJip> matjipList) {
+    this.matjipList = matjipList;
   }
 
   void setEmailAndType(String email, SocialType type) {

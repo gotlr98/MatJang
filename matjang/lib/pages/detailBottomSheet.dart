@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:matjang/model/matjip.dart';
@@ -69,6 +70,20 @@ class DetailBottomSheet extends StatelessWidget {
                                         y: y,
                                         address: address,
                                         category: category));
+                                FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .email)
+                                    .update({
+                                  "matjip": {
+                                    "place_name": place_name,
+                                    "x": x,
+                                    "y": y,
+                                    "address": address,
+                                    "category": category
+                                  }
+                                });
 
                                 Get.back();
                               },

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -79,8 +80,11 @@ class _MapTestState extends State<MapTest> {
               ),
               title: const Text('Home'),
               onTap: () {
-                print(
-                    Provider.of<UserModel>(context, listen: false).matjipList);
+                var matjip =
+                    Provider.of<UserModel>(context, listen: false).matjipList;
+                for (var i in matjip) {
+                  print(i.place_name);
+                }
               },
               trailing: const Icon(Icons.add),
             ),
