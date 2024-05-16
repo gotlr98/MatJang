@@ -37,9 +37,10 @@ class _LoginState extends State<Login> {
     //(데이터가 없을때는 null을 반환을 합니다.)
     // await storage.deleteAll();
     var login = await storage.read(key: "login");
-
     //user의 정보가 있다면 바로 로그아웃 페이지로 넝어가게 합니다.
     if (login != null) {
+      // var result = FirebaseFirestore.instance.collection("users").doc(login).get();
+
       Get.toNamed("/mapTest", arguments: {"email": login});
     }
   }

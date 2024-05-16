@@ -54,6 +54,7 @@ class _MapTestState extends State<MapTest> {
 
   @override
   Widget build(BuildContext context) {
+    var snap = FirebaseFirestore.instance.collection("users").snapshots();
     return Scaffold(
       appBar: AppBar(
         title: const Text("맛장"),
@@ -80,11 +81,13 @@ class _MapTestState extends State<MapTest> {
               ),
               title: const Text('Home'),
               onTap: () {
-                var matjip =
-                    Provider.of<UserModel>(context, listen: false).matjipList;
-                for (var i in matjip) {
-                  print(i.place_name);
-                }
+                snap.listen((event) {
+                  for (var i in event.docs) {
+                    if (i.id == Get.arguments["email"]) {
+                      print(i.data()["matjip"]);
+                    }
+                  }
+                });
               },
               trailing: const Icon(Icons.add),
             ),

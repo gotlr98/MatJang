@@ -75,14 +75,16 @@ class DetailBottomSheet extends StatelessWidget {
                                     .doc(Provider.of<UserModel>(context,
                                             listen: false)
                                         .email)
-                                    .update({
-                                  "matjip": {
-                                    "place_name": place_name,
-                                    "x": x,
-                                    "y": y,
-                                    "address": address,
-                                    "category": category
-                                  }
+                                    .set({
+                                  "matjip": [
+                                    {
+                                      "place_name": place_name,
+                                      "x": x,
+                                      "y": y,
+                                      "address": address,
+                                      "category": category
+                                    }
+                                  ]
                                 });
 
                                 Get.back();
