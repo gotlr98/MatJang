@@ -29,6 +29,31 @@ class _MapTestState extends State<MapTest> {
   List<MatJip> matjipList = [];
   Set<Marker> markers = {};
   LatLng center = LatLng(37.4826364, 126.501144);
+  var result = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _asyncMethod();
+    });
+  }
+
+  _asyncMethod() async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
+
+    var result = snap.docs;
+
+    for (var i in result) {
+      if (i.id == Get.arguments["email"]) {
+        this.result.add(i.data()["matjip"]);
+        var conv = MatJipList.fromJson(i.data()["matjip"]).matjips!;
+        Provider.of<UserModel>(context, listen: false)
+            .getListFromFirebase(conv);
+      }
+    }
+  }
 
   coord2Category(LatLng lng) async {
     var url =
@@ -54,14 +79,12 @@ class _MapTestState extends State<MapTest> {
 
   @override
   Widget build(BuildContext context) {
-    var snap = FirebaseFirestore.instance.collection("users").snapshots();
     return Scaffold(
       appBar: AppBar(
         title: const Text("맛장"),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        child: Column(
           children: <Widget>[
             UserAccountsDrawerHeader(
                 decoration: BoxDecoration(
@@ -74,32 +97,49 @@ class _MapTestState extends State<MapTest> {
                     const Text("Hi", style: TextStyle(color: Colors.black)),
                 accountEmail: Text(Get.arguments["email"],
                     style: const TextStyle(color: Colors.black))),
-            ListTile(
-              leading: Icon(
-                Icons.home,
-                color: Colors.grey[850],
-              ),
-              title: const Text('Home'),
-              onTap: () {
-                snap.listen((event) {
-                  for (var i in event.docs) {
-                    if (i.id == Get.arguments["email"]) {
-                      print(i.data()["matjip"]);
-                    }
-                  }
-                });
-              },
-              trailing: const Icon(Icons.add),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "내 맛집 리스트",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                ),
+              ],
             ),
-            // Scaffold(
-            //     body: Consumer<UserModel>(builder: (context, value, child) {
-            //   return Column(
-            //     children: [Text(value.matjipList.toString())],
-            //   );
-            // }))
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: result.length,
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, i) {
+                return ListTile(
+                  title: Text(result[i][i]["place_name"]),
+                  onTap: () {},
+                );
+              },
+            ),
           ],
         ),
       ),
+      // UserAccountsDrawerHeader(
+      //           decoration: BoxDecoration(
+      //             color: Colors.blue[100],
+      //             borderRadius: const BorderRadius.only(
+      //                 bottomLeft: Radius.circular(40.0),
+      //                 bottomRight: Radius.circular(40.0)),
+      //           ),
+      //           accountName:
+      //               const Text("Hi", style: TextStyle(color: Colors.black)),
+      //           accountEmail: Text(Get.arguments["email"],
+      //               style: const TextStyle(color: Colors.black))),
+      //       const Row(
+      //         mainAxisAlignment: MainAxisAlignment.center,
+      //         children: [
+      //           Text(
+      //             "내 맛집 리스트",
+      //             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+      //           ),
+      //         ],
+      //       ),
       body: Stack(children: [
         KakaoMap(
           center: center,

@@ -63,29 +63,53 @@ class DetailBottomSheet extends StatelessWidget {
                         actions: [
                           TextButton(
                               onPressed: () {
-                                Provider.of<UserModel>(context, listen: false)
-                                    .addList(MatJip(
-                                        place_name: place_name,
-                                        x: x,
-                                        y: y,
-                                        address: address,
-                                        category: category));
-                                FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(Provider.of<UserModel>(context,
+                                if (Provider.of<UserModel>(context,
                                             listen: false)
-                                        .email)
-                                    .set({
-                                  "matjip": [
-                                    {
-                                      "place_name": place_name,
-                                      "x": x,
-                                      "y": y,
-                                      "address": address,
-                                      "category": category
-                                    }
-                                  ]
-                                });
+                                        .matjipList
+                                        .length <=
+                                    1) {
+                                  Provider.of<UserModel>(context, listen: false)
+                                      .addList(MatJip(
+                                          place_name: place_name,
+                                          x: x,
+                                          y: y,
+                                          address: address,
+                                          category: category));
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(Provider.of<UserModel>(context,
+                                              listen: false)
+                                          .email)
+                                      .set({
+                                    "matjip": [
+                                      {
+                                        "place_name": place_name,
+                                        "x": x,
+                                        "y": y,
+                                        "address": address,
+                                        "category": category
+                                      }
+                                    ]
+                                  });
+                                } else {
+                                  Provider.of<UserModel>(context, listen: false)
+                                      .addList(MatJip(
+                                          place_name: place_name,
+                                          x: x,
+                                          y: y,
+                                          address: address,
+                                          category: category));
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(Provider.of<UserModel>(context,
+                                              listen: false)
+                                          .email)
+                                      .update({
+                                    "matjip": Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .matjipList
+                                  });
+                                }
 
                                 Get.back();
                               },

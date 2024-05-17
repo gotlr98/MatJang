@@ -40,6 +40,8 @@ class _LoginState extends State<Login> {
     //user의 정보가 있다면 바로 로그아웃 페이지로 넝어가게 합니다.
     if (login != null) {
       // var result = FirebaseFirestore.instance.collection("users").doc(login).get();
+      Provider.of<UserModel>(context, listen: false)
+          .setEmailAndType(login, SocialType.Kakao);
 
       Get.toNamed("/mapTest", arguments: {"email": login});
     }
