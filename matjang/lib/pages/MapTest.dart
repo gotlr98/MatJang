@@ -30,6 +30,7 @@ class _MapTestState extends State<MapTest> {
   Set<Marker> markers = {};
   LatLng center = LatLng(37.4826364, 126.501144);
   var result = [];
+  List<MatJip> myMatjipList = [];
 
   @override
   void initState() {
@@ -46,13 +47,14 @@ class _MapTestState extends State<MapTest> {
     var result = snap.docs;
 
     for (var i in result) {
+      myMatjipList = [];
       if (i.id == Get.arguments["email"]) {
         var getMatjip = i.data()["matjip"];
-        List<MatJip> matjipList = [];
+
         this.result.add(getMatjip);
         for (var i in getMatjip) {
           // matjipList.add(i);
-          matjipList.add(MatJip(
+          myMatjipList.add(MatJip(
               place_name: i["place_name"],
               x: i["x"],
               y: i["y"],
@@ -60,7 +62,7 @@ class _MapTestState extends State<MapTest> {
               category: i["category"]));
         }
         Provider.of<UserModel>(context, listen: false)
-            .getListFromFirebase(matjipList);
+            .getListFromFirebase(myMatjipList);
       }
     }
   }
@@ -90,6 +92,11 @@ class _MapTestState extends State<MapTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      onDrawerChanged: (isOpened) {
+        setState(() {
+          _asyncMethod();
+        });
+      },
       appBar: AppBar(
         title: const Text("맛장"),
       ),
@@ -118,23 +125,12 @@ class _MapTestState extends State<MapTest> {
             ),
             ListView.builder(
               shrinkWrap: true,
-              itemCount: Provider.of<UserModel>(context, listen: false)
-                  .matjipList
-                  .length,
+              itemCount: myMatjipList.length,
               padding: EdgeInsets.zero,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: const Text("test"),
-                  onTap: () {
-                    int length = Provider.of<UserModel>(context, listen: false)
-                        .matjipList
-                        .length;
-                    var lis = Provider.of<UserModel>(context, listen: false)
-                        .matjipList;
-                    for (var i = 0; i < length; i++) {
-                      print(lis[i].place_name);
-                    }
-                  },
+                  title: Text(myMatjipList[i].place_name!),
+                  onTap: () {},
                 );
               },
             ),
