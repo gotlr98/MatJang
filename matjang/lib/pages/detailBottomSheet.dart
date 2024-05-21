@@ -62,54 +62,29 @@ class DetailBottomSheet extends StatelessWidget {
                         content: const Text("맛집에 등록하시겠습니까?"),
                         actions: [
                           TextButton(
-                              onPressed: () {
-                                if (Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .matjipList
-                                        .length <=
-                                    1) {
-                                  Provider.of<UserModel>(context, listen: false)
-                                      .addList(MatJip(
-                                          place_name: place_name,
-                                          x: x,
-                                          y: y,
-                                          address: address,
-                                          category: category));
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(Provider.of<UserModel>(context,
-                                              listen: false)
-                                          .email)
-                                      .set({
-                                    "matjip": [
-                                      {
-                                        "place_name": place_name,
-                                        "x": x,
-                                        "y": y,
-                                        "address": address,
-                                        "category": category
-                                      }
-                                    ]
-                                  });
-                                } else {
-                                  Provider.of<UserModel>(context, listen: false)
-                                      .addList(MatJip(
-                                          place_name: place_name,
-                                          x: x,
-                                          y: y,
-                                          address: address,
-                                          category: category));
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(Provider.of<UserModel>(context,
-                                              listen: false)
-                                          .email)
-                                      .update({
-                                    "matjip": Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .matjipList
-                                  });
+                              onPressed: () async {
+                                Provider.of<UserModel>(context, listen: false)
+                                    .addList(MatJip(
+                                        place_name: place_name,
+                                        x: x,
+                                        y: y,
+                                        address: address,
+                                        category: category));
+
+                                var result = Provider.of<UserModel>(context,
+                                        listen: false)
+                                    .matjipList;
+                                var li = [];
+                                for (var i in result) {
+                                  li.add(MatJip().toJson(i));
                                 }
+                                print(result);
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .email)
+                                    .set({"matjip": li});
 
                                 Get.back();
                               },

@@ -47,10 +47,20 @@ class _MapTestState extends State<MapTest> {
 
     for (var i in result) {
       if (i.id == Get.arguments["email"]) {
-        this.result.add(i.data()["matjip"]);
-        var conv = MatJipList.fromJson(i.data()["matjip"]).matjips!;
+        var getMatjip = i.data()["matjip"];
+        List<MatJip> matjipList = [];
+        this.result.add(getMatjip);
+        for (var i in getMatjip) {
+          // matjipList.add(i);
+          matjipList.add(MatJip(
+              place_name: i["place_name"],
+              x: i["x"],
+              y: i["y"],
+              address: i["address"],
+              category: i["category"]));
+        }
         Provider.of<UserModel>(context, listen: false)
-            .getListFromFirebase(conv);
+            .getListFromFirebase(matjipList);
       }
     }
   }
@@ -108,12 +118,23 @@ class _MapTestState extends State<MapTest> {
             ),
             ListView.builder(
               shrinkWrap: true,
-              itemCount: result.length,
+              itemCount: Provider.of<UserModel>(context, listen: false)
+                  .matjipList
+                  .length,
               padding: EdgeInsets.zero,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(result[i][i]["place_name"]),
-                  onTap: () {},
+                  title: const Text("test"),
+                  onTap: () {
+                    int length = Provider.of<UserModel>(context, listen: false)
+                        .matjipList
+                        .length;
+                    var lis = Provider.of<UserModel>(context, listen: false)
+                        .matjipList;
+                    for (var i = 0; i < length; i++) {
+                      print(lis[i].place_name);
+                    }
+                  },
                 );
               },
             ),
