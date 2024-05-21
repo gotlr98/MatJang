@@ -12,12 +12,14 @@ class DetailBottomSheet extends StatelessWidget {
       this.address,
       this.category,
       this.x,
-      this.y});
+      this.y,
+      this.isRegister = false});
   String? place_name;
   String? address;
   String? category;
   String? x;
   String? y;
+  bool isRegister;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,14 @@ class DetailBottomSheet extends StatelessWidget {
                         actions: [
                           TextButton(
                               onPressed: () async {
+                                var getList = Provider.of<UserModel>(context,
+                                        listen: false)
+                                    .matjipList;
+                                for (var i in getList) {
+                                  if (i.place_name == place_name) {
+                                    Get.snackbar("중복", "이미 등록된 맛집입니다");
+                                  }
+                                }
                                 Provider.of<UserModel>(context, listen: false)
                                     .addList(MatJip(
                                         place_name: place_name,
@@ -97,7 +107,9 @@ class DetailBottomSheet extends StatelessWidget {
                         ],
                       ));
                     },
-                    icon: const Icon(Icons.bookmark))
+                    icon: isRegister
+                        ? const Icon(Icons.check)
+                        : const Icon(Icons.bookmark))
               ],
             )
           ],

@@ -20,6 +20,7 @@ class MapTest extends StatefulWidget {
 }
 
 class _MapTestState extends State<MapTest> {
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   late KakaoMapController mapController;
   TextEditingController searchField = TextEditingController();
   String message = "";
@@ -92,6 +93,7 @@ class _MapTestState extends State<MapTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       onDrawerChanged: (isOpened) {
         setState(() {
           _asyncMethod();
@@ -112,7 +114,8 @@ class _MapTestState extends State<MapTest> {
                 ),
                 accountName:
                     const Text("Hi", style: TextStyle(color: Colors.black)),
-                accountEmail: Text(Get.arguments["email"],
+                accountEmail: Text(
+                    Provider.of<UserModel>(context, listen: false).email!,
                     style: const TextStyle(color: Colors.black))),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -130,33 +133,37 @@ class _MapTestState extends State<MapTest> {
               itemBuilder: (context, i) {
                 return ListTile(
                   title: Text(myMatjipList[i].place_name!),
-                  onTap: () {},
+                  onTap: () {
+                    var count = 0;
+                    matjipList = [];
+                    markers.clear();
+
+                    matjipList.add(myMatjipList[i]);
+                    markers.add(Marker(
+                      markerId: UniqueKey().toString(),
+                      latLng: LatLng(double.parse(myMatjipList[i].y!),
+                          double.parse(myMatjipList[i].x!)),
+                      infoWindowContent: myMatjipList[i].place_name!,
+                    ));
+                    if (count == 0) {
+                      center = LatLng(double.parse(myMatjipList[i].y!),
+                          double.parse(myMatjipList[i].x!));
+                      count += 1;
+                    }
+
+                    mapController.setCenter(center);
+
+                    if (scaffoldKey.currentState!.isDrawerOpen) {
+                      scaffoldKey.currentState!.closeDrawer();
+                    }
+                    setState(() {});
+                  },
                 );
               },
             ),
           ],
         ),
       ),
-      // UserAccountsDrawerHeader(
-      //           decoration: BoxDecoration(
-      //             color: Colors.blue[100],
-      //             borderRadius: const BorderRadius.only(
-      //                 bottomLeft: Radius.circular(40.0),
-      //                 bottomRight: Radius.circular(40.0)),
-      //           ),
-      //           accountName:
-      //               const Text("Hi", style: TextStyle(color: Colors.black)),
-      //           accountEmail: Text(Get.arguments["email"],
-      //               style: const TextStyle(color: Colors.black))),
-      //       const Row(
-      //         mainAxisAlignment: MainAxisAlignment.center,
-      //         children: [
-      //           Text(
-      //             "내 맛집 리스트",
-      //             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
-      //           ),
-      //         ],
-      //       ),
       body: Stack(children: [
         KakaoMap(
           center: center,
@@ -176,6 +183,7 @@ class _MapTestState extends State<MapTest> {
             String? categoryName;
             String? x;
             String? y;
+            bool isRegister = false;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -184,14 +192,34 @@ class _MapTestState extends State<MapTest> {
                 marker = i;
               }
             }
-            for (var i in matjipList) {
-              if (double.parse(i.x!) == marker.latLng.longitude &&
-                  double.parse(i.y!) == marker.latLng.latitude) {
-                address = i.address;
-                placeName = i.place_name;
-                categoryName = i.category?.split(">").last;
-                x = i.x;
-                y = i.y;
+            if (matjipList.isEmpty) {
+              for (var i in myMatjipList) {
+                if (double.parse(i.x!) == marker.latLng.longitude &&
+                    double.parse(i.y!) == marker.latLng.latitude) {
+                  address = i.address;
+                  placeName = i.place_name;
+                  categoryName = i.category?.split(">").last;
+                  x = i.x;
+                  y = i.y;
+                }
+              }
+            } else {
+              for (var i in matjipList) {
+                if (double.parse(i.x!) == marker.latLng.longitude &&
+                    double.parse(i.y!) == marker.latLng.latitude) {
+                  address = i.address;
+                  placeName = i.place_name;
+                  categoryName = i.category?.split(">").last;
+                  x = i.x;
+                  y = i.y;
+                }
+              }
+            }
+            var check =
+                Provider.of<UserModel>(context, listen: false).matjipList;
+            for (var i in check) {
+              if (i.address == address) {
+                isRegister = true;
               }
             }
 
@@ -204,6 +232,7 @@ class _MapTestState extends State<MapTest> {
                   category: categoryName,
                   x: x,
                   y: y,
+                  isRegister: isRegister,
                 ),
               ));
             } else {
