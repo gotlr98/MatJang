@@ -30,7 +30,9 @@ class DetailBottomSheet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              direction: Axis.horizontal,
+              alignment: WrapAlignment.start,
               children: [
                 Text(
                   place_name!,
@@ -70,7 +72,9 @@ class DetailBottomSheet extends StatelessWidget {
                                     .matjipList;
                                 for (var i in getList) {
                                   if (i.place_name == place_name) {
-                                    Get.snackbar("중복", "이미 등록된 맛집입니다");
+                                    Get.back();
+                                    Get.snackbar("중복", "이미 등록된 맛집입니다",
+                                        duration: const Duration(seconds: 2));
                                   }
                                 }
                                 Provider.of<UserModel>(context, listen: false)
@@ -88,7 +92,6 @@ class DetailBottomSheet extends StatelessWidget {
                                 for (var i in result) {
                                   li.add(MatJip().toJson(i));
                                 }
-                                print(result);
                                 await FirebaseFirestore.instance
                                     .collection("users")
                                     .doc(Provider.of<UserModel>(context,

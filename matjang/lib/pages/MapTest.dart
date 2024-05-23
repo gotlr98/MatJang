@@ -2,12 +2,14 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
+import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
 import '../model/usermodel.dart';
@@ -79,19 +81,39 @@ class _MapTestState extends State<MapTest> {
     }
   }
 
-  coord2Keyword(String keyword) async {
-    var url =
-        "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword";
+  coord2Keyword(String keyword, LatLng lng) async {
+    bool isEnd = false;
+    int page = 1;
 
-    var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
-    var response = await http.get(Uri.parse(url), headers: header);
-    if (response.statusCode == 200) {
-      matjipList = MatJip().matjipDatasFromJson(response.body);
+    while (isEnd = true) {
+      var url =
+          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=10000page=$page";
+
+      var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
+      var response = await http.get(Uri.parse(url), headers: header);
+      var check = jsonDecode(response.body);
+      print(check["meta"]);
+      if (response.statusCode == 200) {
+        matjipList += MatJip().matjipDatasFromJson(response.body);
+      } else {
+        print(response.statusCode);
+        break;
+      }
+      if (check["meta"]["is_end"] == true) {
+        isEnd = true;
+
+        break;
+      }
+
+      isEnd = true;
+      page += 1;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    String nickName =
+        (Provider.of<UserModel>(context, listen: false).email!).split("@")[0];
     return Scaffold(
       key: scaffoldKey,
       onDrawerChanged: (isOpened) {
@@ -114,15 +136,14 @@ class _MapTestState extends State<MapTest> {
                 ),
                 accountName:
                     const Text("Hi", style: TextStyle(color: Colors.black)),
-                accountEmail: Text(
-                    Provider.of<UserModel>(context, listen: false).email!,
+                accountEmail: Text("$nickName 님",
                     style: const TextStyle(color: Colors.black))),
             const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "내 맛집 리스트",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -132,7 +153,11 @@ class _MapTestState extends State<MapTest> {
               padding: EdgeInsets.zero,
               itemBuilder: (context, i) {
                 return ListTile(
-                  title: Text(myMatjipList[i].place_name!),
+                  title: Text(
+                    myMatjipList[i].place_name!,
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                  leading: const Icon(Icons.food_bank),
                   onTap: () {
                     var count = 0;
                     matjipList = [];
@@ -192,29 +217,18 @@ class _MapTestState extends State<MapTest> {
                 marker = i;
               }
             }
-            if (matjipList.isEmpty) {
-              for (var i in myMatjipList) {
-                if (double.parse(i.x!) == marker.latLng.longitude &&
-                    double.parse(i.y!) == marker.latLng.latitude) {
-                  address = i.address;
-                  placeName = i.place_name;
-                  categoryName = i.category?.split(">").last;
-                  x = i.x;
-                  y = i.y;
-                }
-              }
-            } else {
-              for (var i in matjipList) {
-                if (double.parse(i.x!) == marker.latLng.longitude &&
-                    double.parse(i.y!) == marker.latLng.latitude) {
-                  address = i.address;
-                  placeName = i.place_name;
-                  categoryName = i.category?.split(">").last;
-                  x = i.x;
-                  y = i.y;
-                }
+
+            for (var i in matjipList) {
+              if (double.parse(i.x!) == marker.latLng.longitude &&
+                  double.parse(i.y!) == marker.latLng.latitude) {
+                address = i.address;
+                placeName = i.place_name;
+                categoryName = i.category?.split(">").last;
+                x = i.x;
+                y = i.y;
               }
             }
+
             var check =
                 Provider.of<UserModel>(context, listen: false).matjipList;
             for (var i in check) {
@@ -300,8 +314,15 @@ class _MapTestState extends State<MapTest> {
                     var count = 0;
                     matjipList = [];
                     markers.clear();
-                    await coord2Keyword(searchField.text);
+                    var cen = await mapController.getCenter();
+                    print(cen.latitude);
+                    await coord2Keyword(searchField.text, cen);
 
+                    if (matjipList.isEmpty) {
+                      Get.snackbar("실패", "검색 결과가 없습니다");
+                      return;
+                    }
+                    print(matjipList.length);
                     for (var i in matjipList) {
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
@@ -317,6 +338,12 @@ class _MapTestState extends State<MapTest> {
                     mapController.setCenter(center);
 
                     searchField.clear();
+
+                    Get.bottomSheet(ConstrainedBox(
+                        constraints: BoxConstraints(
+                            maxHeight:
+                                (2 / 3) * MediaQuery.of(context).size.height),
+                        child: SearchResultPage(matjip_list: matjipList)));
 
                     setState(() {});
                   },
