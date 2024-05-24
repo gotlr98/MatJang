@@ -87,12 +87,11 @@ class _MapTestState extends State<MapTest> {
 
     while (isEnd = true) {
       var url =
-          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=10000&page=$page";
+          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=5000&page=$page";
 
       var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
       var response = await http.get(Uri.parse(url), headers: header);
       var check = jsonDecode(response.body);
-      print(check["meta"]);
       if (response.statusCode == 200) {
         matjipList += MatJip().matjipDatasFromJson(response.body);
       } else {
@@ -125,68 +124,69 @@ class _MapTestState extends State<MapTest> {
         title: const Text("맛장"),
       ),
       drawer: Drawer(
-        child: Column(
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.blue[100],
-                  borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(40.0),
-                      bottomRight: Radius.circular(40.0)),
-                ),
-                accountName:
-                    const Text("Hi", style: TextStyle(color: Colors.black)),
-                accountEmail: Text("$nickName 님",
-                    style: const TextStyle(color: Colors.black))),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "내 맛집 리스트",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: myMatjipList.length,
-              padding: EdgeInsets.zero,
-              itemBuilder: (context, i) {
-                return ListTile(
-                  title: Text(
-                    myMatjipList[i].place_name!,
-                    style: const TextStyle(fontSize: 15),
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              UserAccountsDrawerHeader(
+                  decoration: BoxDecoration(
+                    color: Colors.blue[100],
+                    borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(40.0),
+                        bottomRight: Radius.circular(40.0)),
                   ),
-                  leading: const Icon(Icons.food_bank),
-                  onTap: () {
-                    var count = 0;
-                    matjipList = [];
-                    markers.clear();
+                  accountName:
+                      const Text("Hi", style: TextStyle(color: Colors.black)),
+                  accountEmail: Text("$nickName 님",
+                      style: const TextStyle(color: Colors.black))),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "내 맛집 리스트",
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: myMatjipList.length,
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, i) {
+                  return ListTile(
+                    title: Text(
+                      myMatjipList[i].place_name!,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                    leading: const Icon(Icons.food_bank),
+                    onTap: () {
+                      var count = 0;
+                      matjipList = [];
+                      markers.clear();
 
-                    matjipList.add(myMatjipList[i]);
-                    markers.add(Marker(
-                      markerId: UniqueKey().toString(),
-                      latLng: LatLng(double.parse(myMatjipList[i].y!),
-                          double.parse(myMatjipList[i].x!)),
-                      infoWindowContent: myMatjipList[i].place_name!,
-                    ));
-                    if (count == 0) {
-                      center = LatLng(double.parse(myMatjipList[i].y!),
-                          double.parse(myMatjipList[i].x!));
-                      count += 1;
-                    }
+                      matjipList.add(myMatjipList[i]);
+                      markers.add(Marker(
+                        markerId: UniqueKey().toString(),
+                        latLng: LatLng(double.parse(myMatjipList[i].y!),
+                            double.parse(myMatjipList[i].x!)),
+                      ));
+                      if (count == 0) {
+                        center = LatLng(double.parse(myMatjipList[i].y!),
+                            double.parse(myMatjipList[i].x!));
+                        count += 1;
+                      }
 
-                    mapController.setCenter(center);
+                      mapController.setCenter(center);
 
-                    if (scaffoldKey.currentState!.isDrawerOpen) {
-                      scaffoldKey.currentState!.closeDrawer();
-                    }
-                    setState(() {});
-                  },
-                );
-              },
-            ),
-          ],
+                      if (scaffoldKey.currentState!.isDrawerOpen) {
+                        scaffoldKey.currentState!.closeDrawer();
+                      }
+                      setState(() {});
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: Stack(children: [
@@ -315,19 +315,16 @@ class _MapTestState extends State<MapTest> {
                     matjipList = [];
                     markers.clear();
                     var cen = await mapController.getCenter();
-                    print(cen.latitude);
                     await coord2Keyword(searchField.text, cen);
 
                     if (matjipList.isEmpty) {
                       Get.snackbar("실패", "검색 결과가 없습니다");
                       return;
                     }
-                    print(matjipList.length);
                     for (var i in matjipList) {
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
                         latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
-                        infoWindowContent: i.place_name!,
                       ));
                       if (count == 0) {
                         center = LatLng(double.parse(i.y!), double.parse(i.x!));
@@ -340,10 +337,17 @@ class _MapTestState extends State<MapTest> {
                     searchField.clear();
 
                     Get.bottomSheet(ConstrainedBox(
-                        constraints: BoxConstraints(
-                            maxHeight:
-                                (2 / 3) * MediaQuery.of(context).size.height),
-                        child: SearchResultPage(matjip_list: matjipList)));
+                            constraints: BoxConstraints(
+                                maxHeight: (2 / 3) *
+                                    MediaQuery.of(context).size.height),
+                            child: SearchResultPage(matjip_list: matjipList)))
+                        .then((value) {
+                      center = LatLng(double.parse(value["touch_result"].y),
+                          double.parse(value["touch_result"].x));
+                      mapController.setCenter(center);
+
+                      setState(() {});
+                    });
 
                     setState(() {});
                   },

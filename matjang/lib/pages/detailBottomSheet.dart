@@ -71,10 +71,12 @@ class DetailBottomSheet extends StatelessWidget {
                                         listen: false)
                                     .matjipList;
                                 for (var i in getList) {
-                                  if (i.place_name == place_name) {
+                                  if (i.place_name == place_name &&
+                                      i.address == address) {
                                     Get.back();
                                     Get.snackbar("중복", "이미 등록된 맛집입니다",
                                         duration: const Duration(seconds: 2));
+                                    return;
                                   }
                                 }
                                 Provider.of<UserModel>(context, listen: false)
