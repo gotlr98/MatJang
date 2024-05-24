@@ -87,7 +87,7 @@ class _MapTestState extends State<MapTest> {
 
     while (isEnd = true) {
       var url =
-          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=10000page=$page";
+          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=10000&page=$page";
 
       var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
       var response = await http.get(Uri.parse(url), headers: header);
