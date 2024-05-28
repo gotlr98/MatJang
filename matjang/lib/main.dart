@@ -12,6 +12,7 @@ import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
+import 'pages/detailPage.dart';
 import 'pages/login.dart';
 import 'pages/mapTest.dart';
 import 'pages/test.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/test', page: () => const Test()),
           GetPage(name: '/mapTest', page: () => const MapTest()),
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
+          GetPage(name: '/detailPage', page: () => DetailPage()),
         ],
       ),
     );

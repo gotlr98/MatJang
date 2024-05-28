@@ -24,6 +24,7 @@ class UserModel with ChangeNotifier {
 
   void getListFromFirebase(List<MatJip> matjipList) {
     this.matjipList = matjipList;
+    notifyListeners();
   }
 
   void setEmailAndType(String email, SocialType type) {

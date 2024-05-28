@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +10,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
+import 'package:matjang/pages/detailPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
@@ -34,40 +36,57 @@ class _MapTestState extends State<MapTest> {
   LatLng center = LatLng(37.4826364, 126.501144);
   var result = [];
   List<MatJip> myMatjipList = [];
+  int mapLevel = 4;
+  var get_matjip_review = {};
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _asyncMethod();
+      _getUsersMatjip();
+      _getMatjipsReview();
     });
   }
 
-  _asyncMethod() async {
+  _getUsersMatjip() async {
     var snap = await FirebaseFirestore.instance.collection("users").get();
 
     var result = snap.docs;
-
+    myMatjipList = [];
     for (var i in result) {
-      myMatjipList = [];
       if (i.id == Get.arguments["email"]) {
         var getMatjip = i.data()["matjip"];
 
         this.result.add(getMatjip);
-        for (var i in getMatjip) {
-          // matjipList.add(i);
-          myMatjipList.add(MatJip(
-              place_name: i["place_name"],
-              x: i["x"],
-              y: i["y"],
-              address: i["address"],
-              category: i["category"]));
+        if (this.result.isNotEmpty) {
+          for (var i in getMatjip) {
+            // matjipList.add(i);
+            myMatjipList.add(MatJip(
+                place_name: i["place_name"],
+                x: i["x"],
+                y: i["y"],
+                address: i["address"],
+                category: i["category"]));
+          }
+          Provider.of<UserModel>(context, listen: false)
+              .getListFromFirebase(myMatjipList);
         }
-        Provider.of<UserModel>(context, listen: false)
-            .getListFromFirebase(myMatjipList);
       }
     }
+    matjipList = myMatjipList;
+  }
+
+  _getMatjipsReview() async {
+    var snap = await FirebaseFirestore.instance.collection("matjips").get();
+
+    var result = snap.docs;
+
+    for (var i in result) {
+      get_matjip_review[i.id] = i.data()["review"];
+    }
+
+    print(get_matjip_review);
   }
 
   coord2Category(LatLng lng) async {
@@ -87,7 +106,7 @@ class _MapTestState extends State<MapTest> {
 
     while (isEnd = true) {
       var url =
-          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=5000&page=$page";
+          "https://dapi.kakao.com/v2/local/search/keyword.json?query=$keyword&x=${lng.longitude}&y=${lng.latitude}&radius=10000&page=$page";
 
       var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
       var response = await http.get(Uri.parse(url), headers: header);
@@ -117,7 +136,7 @@ class _MapTestState extends State<MapTest> {
       key: scaffoldKey,
       onDrawerChanged: (isOpened) {
         setState(() {
-          _asyncMethod();
+          _getUsersMatjip();
         });
       },
       appBar: AppBar(
@@ -128,23 +147,47 @@ class _MapTestState extends State<MapTest> {
           child: Column(
             children: <Widget>[
               UserAccountsDrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.blue[100],
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(40.0),
-                        bottomRight: Radius.circular(40.0)),
-                  ),
-                  accountName:
-                      const Text("Hi", style: TextStyle(color: Colors.black)),
-                  accountEmail: Text("$nickName 님",
-                      style: const TextStyle(color: Colors.black))),
-              const Row(
+                decoration: BoxDecoration(
+                  color: Colors.blue[100],
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(40.0),
+                      bottomRight: Radius.circular(40.0)),
+                ),
+                accountName:
+                    const Text("Hi", style: TextStyle(color: Colors.black)),
+                accountEmail: Text("$nickName 님",
+                    style: const TextStyle(color: Colors.black)),
+                // onDetailsPressed: () {},
+                currentAccountPicture: const Icon(Icons.people),
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "내 맛집 리스트",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500),
                   ),
+                  IconButton(
+                      onPressed: () {
+                        mapLevel = 8;
+                        markers.clear();
+
+                        for (var i in myMatjipList) {
+                          markers.add(Marker(
+                              markerId: UniqueKey().toString(),
+                              latLng: LatLng(
+                                  double.parse(i.y!), double.parse(i.x!))));
+                        }
+
+                        if (scaffoldKey.currentState!.isDrawerOpen) {
+                          scaffoldKey.currentState!.closeDrawer();
+                        }
+
+                        mapController.setLevel(mapLevel);
+
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.map))
                 ],
               ),
               ListView.builder(
@@ -212,6 +255,9 @@ class _MapTestState extends State<MapTest> {
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
+
+            // matjipList =
+            //     Provider.of<UserModel>(context, listen: false).matjipList;
             for (var i in markers) {
               if (markerId == i.markerId) {
                 marker = i;
@@ -238,15 +284,41 @@ class _MapTestState extends State<MapTest> {
             }
 
             if (address != null && placeName != null) {
-              Get.bottomSheet(SizedBox(
-                height: 200,
-                child: DetailBottomSheet(
-                  address: address,
-                  place_name: placeName,
-                  category: categoryName,
-                  x: x,
-                  y: y,
-                  isRegister: isRegister,
+              Get.bottomSheet(GestureDetector(
+                onTap: () {
+                  // Get.toNamed("/detailPage", arguments: {
+                  //   "address": address,
+                  //   "place_name": placeName,
+                  //   "isRegister": isRegister
+                  // });
+                  for (var i in get_matjip_review.keys) {
+                    if (i == "$placeName&$address") {
+                      var reviews = get_matjip_review[i];
+                      Get.to(() => DetailPage(
+                          address: address,
+                          place_name: placeName,
+                          isRegister: isRegister,
+                          category: categoryName,
+                          review: reviews));
+                    }
+                  }
+                  Get.to(() => DetailPage(
+                      address: address,
+                      place_name: placeName,
+                      isRegister: isRegister,
+                      category: categoryName,
+                      review: const []));
+                },
+                child: SizedBox(
+                  height: 200,
+                  child: DetailBottomSheet(
+                    address: address,
+                    place_name: placeName,
+                    category: categoryName,
+                    x: x,
+                    y: y,
+                    isRegister: isRegister,
+                  ),
                 ),
               ));
             } else {
@@ -281,7 +353,7 @@ class _MapTestState extends State<MapTest> {
               setState(() {});
             }
           },
-          currentLevel: 4,
+          currentLevel: mapLevel,
           zoomControl: true,
           zoomControlPosition: ControlPosition.bottomRight,
           markers: markers.toList(),
