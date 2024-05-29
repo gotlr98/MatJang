@@ -1,4 +1,4 @@
-#  🛸MatJang App🛸
+#  🛸 MatJang 🛸
 
 #### 나만의 맛집지도를 만들고 다른 유저와 함께 공유하며 수정할 수 있는 맛집지도 앱입니다.
 
@@ -18,17 +18,11 @@
 ------------------------
 * 메인화면
 
-<p align="center">  
-   //<img src="https://github.com/gotlr98/OTTDiary/assets/71820857/67b62533-f86c-49c4-8aaa-403337828137" align="center" width="33%">
-   //<img src="https://github.com/gotlr98/OTTDiary/assets/71820857/268415e8-54e9-4b36-8fdc-bfc4fbd054bc" align="center" width="33%">
-</p>
+
 
 
 * 리뷰창
-<p align="center">  
-   //<img src="https://github.com/gotlr98/OTTDiary/assets/71820857/2bb81c2a-86f5-4795-a29f-dfb01a38486a" align="center" width="33%">
-   //<img src="https://github.com/gotlr98/OTTDiary/assets/71820857/4934207b-07a6-40f4-9898-92c429e722f4" align="center" width="33%"> 
-</p>
+
 
 
 
