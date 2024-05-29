@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+
+import '../model/usermodel.dart';
 
 class DetailPage extends StatelessWidget {
   DetailPage(
@@ -8,6 +11,7 @@ class DetailPage extends StatelessWidget {
       this.address,
       this.place_name,
       this.isRegister,
+      this.isReviewed,
       this.category,
       this.review});
 
@@ -15,11 +19,13 @@ class DetailPage extends StatelessWidget {
   String? address;
   String? category;
   bool? isRegister;
+  bool? isReviewed;
   var review;
 
   @override
   Widget build(BuildContext context) {
-    double rating_;
+    double rating_ = 1.0;
+    TextEditingController reviewField = TextEditingController();
     return Scaffold(
         appBar: AppBar(
           title: Text("$place_name"),
@@ -59,10 +65,24 @@ class DetailPage extends StatelessWidget {
                           onRatingUpdate: (rating) {
                             rating_ = rating;
                           }),
+                      TextField(controller: reviewField),
+                      ElevatedButton(
+                          onPressed: () {
+                            var review =
+                                Provider.of<UserModel>(context, listen: false)
+                                    .review;
+
+                            for (var i in review.keys) {
+                              if (i == "$place_name&$address") {
+                                Get.snackbar("error", "이미 리뷰를 등록한 맛집입니다");
+                              }
+                            }
+                          },
+                          child: const Text("등록하기")),
                       const SizedBox(
                         height: 100,
                       ),
-                      Text(review[0])
+                      // Text(review)
                     ])),
           ],
         ));

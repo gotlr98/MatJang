@@ -37,7 +37,7 @@ class _MapTestState extends State<MapTest> {
   var result = [];
   List<MatJip> myMatjipList = [];
   int mapLevel = 4;
-  var get_matjip_review = {};
+  Map<String, String> get_matjip_review = {};
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _MapTestState extends State<MapTest> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getUsersMatjip();
-      _getMatjipsReview();
+      _getUserMatjipsReview();
     });
   }
 
@@ -77,15 +77,25 @@ class _MapTestState extends State<MapTest> {
     matjipList = myMatjipList;
   }
 
-  _getMatjipsReview() async {
-    var snap = await FirebaseFirestore.instance.collection("matjips").get();
+  _getUserMatjipsReview() async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
 
     var result = snap.docs;
 
     for (var i in result) {
-      get_matjip_review[i.id] = i.data()["review"];
-    }
+      if (i.id == Get.arguments["email"]) {
+        print("here");
+        var getReview = i.data()["review"];
+        for (var i in getReview.keys) {
+          get_matjip_review[i] = getReview[i];
+        }
 
+        if (get_matjip_review.isNotEmpty) {
+          Provider.of<UserModel>(context, listen: false)
+              .getReviewFromFirebase(get_matjip_review);
+        }
+      }
+    }
     print(get_matjip_review);
   }
 
@@ -252,6 +262,7 @@ class _MapTestState extends State<MapTest> {
             String? x;
             String? y;
             bool isRegister = false;
+            bool isReviewed = false;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -275,39 +286,47 @@ class _MapTestState extends State<MapTest> {
               }
             }
 
-            var check =
+            var checkRegister =
                 Provider.of<UserModel>(context, listen: false).matjipList;
-            for (var i in check) {
+            for (var i in checkRegister) {
               if (i.address == address) {
                 isRegister = true;
+              }
+            }
+
+            var checkReview =
+                Provider.of<UserModel>(context, listen: false).review;
+
+            for (var i in checkReview.keys) {
+              if (i == "$placeName&$address") {
+                isReviewed = true;
               }
             }
 
             if (address != null && placeName != null) {
               Get.bottomSheet(GestureDetector(
                 onTap: () {
-                  // Get.toNamed("/detailPage", arguments: {
-                  //   "address": address,
-                  //   "place_name": placeName,
-                  //   "isRegister": isRegister
-                  // });
                   for (var i in get_matjip_review.keys) {
-                    if (i == "$placeName&$address") {
-                      var reviews = get_matjip_review[i];
+                    var reviews = get_matjip_review[i];
+                    if (reviews == null) {
                       Get.to(() => DetailPage(
                           address: address,
                           place_name: placeName,
                           isRegister: isRegister,
+                          isReviewed: isReviewed,
+                          category: categoryName,
+                          review: const []));
+                    } else {
+                      print("123");
+                      Get.to(() => DetailPage(
+                          address: address,
+                          place_name: placeName,
+                          isRegister: isRegister,
+                          isReviewed: isReviewed,
                           category: categoryName,
                           review: reviews));
                     }
                   }
-                  Get.to(() => DetailPage(
-                      address: address,
-                      place_name: placeName,
-                      isRegister: isRegister,
-                      category: categoryName,
-                      review: const []));
                 },
                 child: SizedBox(
                   height: 200,
