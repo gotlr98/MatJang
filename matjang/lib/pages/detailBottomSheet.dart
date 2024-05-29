@@ -5,7 +5,7 @@ import 'package:matjang/model/matjip.dart';
 import 'package:matjang/model/usermodel.dart';
 import 'package:provider/provider.dart';
 
-class DetailBottomSheet extends StatelessWidget {
+class DetailBottomSheet extends StatefulWidget {
   DetailBottomSheet(
       {super.key,
       this.place_name,
@@ -22,6 +22,11 @@ class DetailBottomSheet extends StatelessWidget {
   bool isRegister;
 
   @override
+  State<DetailBottomSheet> createState() => _DetailBottomSheetState();
+}
+
+class _DetailBottomSheetState extends State<DetailBottomSheet> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -35,7 +40,7 @@ class DetailBottomSheet extends StatelessWidget {
               alignment: WrapAlignment.start,
               children: [
                 Text(
-                  place_name!,
+                  widget.place_name!,
                   style: const TextStyle(
                       fontSize: 25, fontWeight: FontWeight.w200),
                 ),
@@ -43,7 +48,7 @@ class DetailBottomSheet extends StatelessWidget {
                   width: 5,
                 ),
                 Text(
-                  category!,
+                  widget.category!,
                   style: const TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w100),
                 )
@@ -53,7 +58,7 @@ class DetailBottomSheet extends StatelessWidget {
               height: 5,
             ),
             Text(
-              address!,
+              widget.address!,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
             ),
             Row(
@@ -67,13 +72,12 @@ class DetailBottomSheet extends StatelessWidget {
                         actions: [
                           TextButton(
                               onPressed: () async {
-                                bool isUpdate = false;
                                 var getList = Provider.of<UserModel>(context,
                                         listen: false)
                                     .matjipList;
                                 for (var i in getList) {
-                                  if (i.place_name == place_name &&
-                                      i.address == address) {
+                                  if (i.place_name == widget.place_name &&
+                                      i.address == widget.address) {
                                     Get.back();
                                     Get.snackbar("중복", "이미 등록된 맛집입니다",
                                         duration: const Duration(seconds: 2));
@@ -82,11 +86,11 @@ class DetailBottomSheet extends StatelessWidget {
                                 }
                                 Provider.of<UserModel>(context, listen: false)
                                     .addList(MatJip(
-                                        place_name: place_name,
-                                        x: x,
-                                        y: y,
-                                        address: address,
-                                        category: category));
+                                        place_name: widget.place_name,
+                                        x: widget.x,
+                                        y: widget.y,
+                                        address: widget.address,
+                                        category: widget.category));
 
                                 var result = Provider.of<UserModel>(context,
                                         listen: false)
@@ -96,16 +100,19 @@ class DetailBottomSheet extends StatelessWidget {
                                   li.add(MatJip().toJson(i));
                                 }
 
-                                // await FirebaseFirestore.instance.collection("users")
-
                                 await FirebaseFirestore.instance
                                     .collection("users")
                                     .doc(Provider.of<UserModel>(context,
                                             listen: false)
                                         .email)
                                     .update({"matjip": li});
-
                                 Get.back();
+
+                                Get.snackbar("Success", "등록완료");
+
+                                setState(() {
+                                  widget.isRegister = true;
+                                });
                               },
                               child: const Text("등록하기")),
                           TextButton(
@@ -116,7 +123,7 @@ class DetailBottomSheet extends StatelessWidget {
                         ],
                       ));
                     },
-                    icon: isRegister
+                    icon: widget.isRegister
                         ? const Icon(Icons.check)
                         : const Icon(Icons.bookmark))
               ],
