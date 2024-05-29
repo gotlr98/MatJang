@@ -37,7 +37,7 @@ class _MapTestState extends State<MapTest> {
   var result = [];
   List<MatJip> myMatjipList = [];
   int mapLevel = 4;
-  Map<String, String> get_matjip_review = {};
+  Map<String, Map<String, double>> get_matjip_review = {};
 
   @override
   void initState() {
@@ -58,8 +58,8 @@ class _MapTestState extends State<MapTest> {
       if (i.id == Get.arguments["email"]) {
         var getMatjip = i.data()["matjip"];
 
-        this.result.add(getMatjip);
-        if (this.result.isNotEmpty) {
+        if (getMatjip != null) {
+          this.result.add(getMatjip);
           for (var i in getMatjip) {
             // matjipList.add(i);
             myMatjipList.add(MatJip(
@@ -84,10 +84,24 @@ class _MapTestState extends State<MapTest> {
 
     for (var i in result) {
       if (i.id == Get.arguments["email"]) {
-        print("here");
         var getReview = i.data()["review"];
-        for (var i in getReview.keys) {
-          get_matjip_review[i] = getReview[i];
+        if (getReview != null) {
+          for (var i in getReview.keys) {
+            Map<String, double> temp = {};
+            String rev = getReview[i]
+                .keys
+                .toString()
+                .replaceAll("(", "")
+                .replaceAll(")", "");
+            double rat = double.parse(getReview[i]
+                .values
+                .toString()
+                .replaceAll("(", "")
+                .replaceAll(")", ""));
+
+            temp[rev] = rat;
+            get_matjip_review[i] = temp;
+          }
         }
 
         if (get_matjip_review.isNotEmpty) {
@@ -96,7 +110,6 @@ class _MapTestState extends State<MapTest> {
         }
       }
     }
-    print(get_matjip_review);
   }
 
   coord2Category(LatLng lng) async {
@@ -306,18 +319,17 @@ class _MapTestState extends State<MapTest> {
             if (address != null && placeName != null) {
               Get.bottomSheet(GestureDetector(
                 onTap: () {
-                  for (var i in get_matjip_review.keys) {
-                    var reviews = get_matjip_review[i];
-                    if (reviews == null) {
-                      Get.to(() => DetailPage(
-                          address: address,
-                          place_name: placeName,
-                          isRegister: isRegister,
-                          isReviewed: isReviewed,
-                          category: categoryName,
-                          review: const []));
-                    } else {
-                      print("123");
+                  if (get_matjip_review.isEmpty) {
+                    Get.to(() => DetailPage(
+                        address: address,
+                        place_name: placeName,
+                        isRegister: isRegister,
+                        isReviewed: isReviewed,
+                        category: categoryName,
+                        review: const []));
+                  } else {
+                    for (var i in get_matjip_review.keys) {
+                      var reviews = get_matjip_review[i];
                       Get.to(() => DetailPage(
                           address: address,
                           place_name: placeName,

@@ -67,6 +67,7 @@ class DetailBottomSheet extends StatelessWidget {
                         actions: [
                           TextButton(
                               onPressed: () async {
+                                bool isUpdate = false;
                                 var getList = Provider.of<UserModel>(context,
                                         listen: false)
                                     .matjipList;
@@ -94,12 +95,15 @@ class DetailBottomSheet extends StatelessWidget {
                                 for (var i in result) {
                                   li.add(MatJip().toJson(i));
                                 }
+
+                                // await FirebaseFirestore.instance.collection("users")
+
                                 await FirebaseFirestore.instance
                                     .collection("users")
                                     .doc(Provider.of<UserModel>(context,
                                             listen: false)
                                         .email)
-                                    .set({"matjip": li});
+                                    .update({"matjip": li});
 
                                 Get.back();
                               },

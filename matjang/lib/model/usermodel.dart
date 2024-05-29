@@ -11,8 +11,8 @@ class UserModel with ChangeNotifier {
   List<MatJip> get _matjipList => matjipList;
   String? get _email => email;
   SocialType get _type => type;
-  Map<String, String> review = {};
-  Map<String, String> get _review => review;
+  Map<String, Map<String, double>> review = {};
+  Map<String, Map<String, double>> get _review => review;
 
   UserModel({
     this.email,
@@ -35,12 +35,12 @@ class UserModel with ChangeNotifier {
     notifyListeners();
   }
 
-  void addReview(String placeName, String review) {
+  void addReview(String placeName, Map<String, double> review) {
     this.review[placeName] = review;
     notifyListeners();
   }
 
-  void getReviewFromFirebase(Map<String, String> reviews) {
+  void getReviewFromFirebase(Map<String, Map<String, double>> reviews) {
     review = reviews;
     notifyListeners();
   }
