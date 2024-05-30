@@ -35,7 +35,9 @@ class _MapTestState extends State<MapTest> {
   Set<Marker> markers = {};
   LatLng center = LatLng(37.4826364, 126.501144);
   var result = [];
+  List<MatJip> temp = [];
   List<MatJip> myMatjipList = [];
+  Map<String, List<MatJip>> allUserMatjipList = {};
   int mapLevel = 4;
   Map<String, Map<String, double>> get_matjip_review = {};
   final selectList = ["지도 둘러보기", "맛집 찾기"];
@@ -77,6 +79,33 @@ class _MapTestState extends State<MapTest> {
       }
     }
     matjipList = myMatjipList;
+  }
+
+  _getAllUsersMatjip() async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
+
+    var result = snap.docs;
+    allUserMatjipList = {};
+    for (var i in result) {
+      if (i.id != Get.arguments["email"]) {
+        var getMatjip = i.data()["matjip"];
+
+        if (getMatjip != null) {
+          // this.result.add(getMatjip);
+          for (var j in getMatjip) {
+            // matjipList.add(i);
+            temp.add(MatJip(
+                place_name: j["place_name"],
+                x: j["x"],
+                y: j["y"],
+                address: j["address"],
+                category: j["category"]));
+          }
+        }
+        allUserMatjipList[i.id] = temp;
+        temp = [];
+      }
+    }
   }
 
   _getUserMatjipsReview() async {
@@ -161,7 +190,9 @@ class _MapTestState extends State<MapTest> {
       key: scaffoldKey,
       onDrawerChanged: (isOpened) {
         setState(() {
-          _getUsersMatjip();
+          if (isOpened == true) {
+            _getUsersMatjip();
+          }
         });
       },
       appBar: AppBar(
@@ -180,6 +211,10 @@ class _MapTestState extends State<MapTest> {
             onChanged: (value) {
               setState(() {
                 selectedValue = value!;
+                if (selectedValue == "지도 둘러보기") {
+                  matjipList = [];
+                  markers.clear();
+                }
               });
             },
           )
@@ -202,6 +237,21 @@ class _MapTestState extends State<MapTest> {
                     style: const TextStyle(color: Colors.black)),
                 // onDetailsPressed: () {},
                 currentAccountPicture: const Icon(Icons.people),
+                currentAccountPictureSize: const Size.square(20),
+                otherAccountsPictures: [
+                  InkWell(
+                      onTap: () async {
+                        if (scaffoldKey.currentState!.isDrawerOpen) {
+                          scaffoldKey.currentState!.closeDrawer();
+                        }
+                        await _getAllUsersMatjip();
+
+                        Get.toNamed("/findFollowersPage",
+                            arguments: {"followers": allUserMatjipList});
+                      },
+                      child: Image.asset("assets/images/followers.png")),
+                ],
+                otherAccountsPicturesSize: const Size.square(20),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -340,23 +390,27 @@ class _MapTestState extends State<MapTest> {
               Get.bottomSheet(GestureDetector(
                 onTap: () {
                   if (get_matjip_review.isEmpty) {
-                    Get.to(() => DetailPage(
-                        address: address,
-                        place_name: placeName,
-                        isRegister: isRegister,
-                        isReviewed: isReviewed,
-                        category: categoryName,
-                        review: const []));
+                    Get.to(
+                        () => DetailPage(
+                            address: address,
+                            place_name: placeName,
+                            isRegister: isRegister,
+                            isReviewed: isReviewed,
+                            category: categoryName,
+                            review: const []),
+                        transition: Transition.circularReveal);
                   } else {
                     for (var i in get_matjip_review.keys) {
                       var reviews = get_matjip_review[i];
-                      Get.to(() => DetailPage(
-                          address: address,
-                          place_name: placeName,
-                          isRegister: isRegister,
-                          isReviewed: isReviewed,
-                          category: categoryName,
-                          review: reviews));
+                      Get.to(
+                          () => DetailPage(
+                              address: address,
+                              place_name: placeName,
+                              isRegister: isRegister,
+                              isReviewed: isReviewed,
+                              category: categoryName,
+                              review: reviews),
+                          transition: Transition.cupertino);
                     }
                   }
                 },
@@ -404,10 +458,6 @@ class _MapTestState extends State<MapTest> {
 
                 setState(() {});
               }
-            } else {
-              matjipList = [];
-              markers.clear();
-              setState(() {});
             }
           },
           currentLevel: mapLevel,

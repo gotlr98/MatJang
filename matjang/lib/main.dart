@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:matjang/model/usermodel.dart';
+import 'package:matjang/pages/findFollowersPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
@@ -54,6 +55,9 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/mapTest', page: () => const MapTest()),
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
           GetPage(name: '/detailPage', page: () => DetailPage()),
+          GetPage(
+              name: '/findFollowersPage',
+              page: () => const FindFollowersPage()),
         ],
       ),
     );
