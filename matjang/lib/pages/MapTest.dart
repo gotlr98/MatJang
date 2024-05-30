@@ -38,6 +38,8 @@ class _MapTestState extends State<MapTest> {
   List<MatJip> myMatjipList = [];
   int mapLevel = 4;
   Map<String, Map<String, double>> get_matjip_review = {};
+  final selectList = ["지도 둘러보기", "맛집 찾기"];
+  var selectedValue = "맛집 찾기";
 
   @override
   void initState() {
@@ -164,6 +166,24 @@ class _MapTestState extends State<MapTest> {
       },
       appBar: AppBar(
         title: const Text("맛장"),
+        actions: [
+          DropdownButton(
+            value: selectedValue,
+            items: selectList.map(
+              (value) {
+                return DropdownMenuItem(
+                  value: value,
+                  child: Text(value),
+                );
+              },
+            ).toList(),
+            onChanged: (value) {
+              setState(() {
+                selectedValue = value!;
+              });
+            },
+          )
+        ],
       ),
       drawer: Drawer(
         child: SingleChildScrollView(
@@ -368,19 +388,25 @@ class _MapTestState extends State<MapTest> {
             }
           },
           onDragChangeCallback: (latLng, zoomLevel, dragType) async {
-            if (dragType == DragType.end) {
+            if (selectedValue == "맛집 찾기") {
+              if (dragType == DragType.end) {
+                matjipList = [];
+                markers.clear();
+                await coord2Category(latLng);
+
+                for (var i in matjipList) {
+                  markers.add(Marker(
+                    markerId: UniqueKey().toString(),
+                    latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                    // infoWindowContent: i.place_name!,
+                  ));
+                }
+
+                setState(() {});
+              }
+            } else {
               matjipList = [];
               markers.clear();
-              await coord2Category(latLng);
-
-              for (var i in matjipList) {
-                markers.add(Marker(
-                  markerId: UniqueKey().toString(),
-                  latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
-                  // infoWindowContent: i.place_name!,
-                ));
-              }
-
               setState(() {});
             }
           },
