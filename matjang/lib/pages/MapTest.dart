@@ -87,7 +87,7 @@ class _MapTestState extends State<MapTest> {
     var result = snap.docs;
     allUserMatjipList = {};
     for (var i in result) {
-      if (i.id != Get.arguments["email"]) {
+      if (i.id != Get.arguments["email"] && i.data()["matjip"] != null) {
         var getMatjip = i.data()["matjip"];
 
         if (getMatjip != null) {

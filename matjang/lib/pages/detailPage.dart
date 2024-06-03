@@ -142,20 +142,6 @@ class DetailPage extends StatelessWidget {
                         height: 100,
                       ),
 
-                      ElevatedButton(
-                          onPressed: () async {
-                            var test = await FirebaseFirestore.instance
-                                .collection("matjips")
-                                .get();
-                            if (test.docs.isEmpty) {
-                              print("black");
-                            } else {
-                              for (var i in test.docs) {
-                                print(i.id);
-                              }
-                            }
-                          },
-                          child: const Text("check data"))
                       // Text(review)
                     ])),
           ],
