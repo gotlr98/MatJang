@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
 import 'package:matjang/pages/detailPage.dart';
+import 'package:matjang/pages/findFollowersPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
@@ -246,8 +247,8 @@ class _MapTestState extends State<MapTest> {
                         }
                         await _getAllUsersMatjip();
 
-                        Get.toNamed("/findFollowersPage",
-                            arguments: {"followers": allUserMatjipList});
+                        Get.to(FindFollowersPage(
+                            allUserMatjipList: allUserMatjipList));
                       },
                       child: Image.asset("assets/images/followers.png")),
                 ],

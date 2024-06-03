@@ -55,9 +55,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/mapTest', page: () => const MapTest()),
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
           GetPage(name: '/detailPage', page: () => DetailPage()),
-          GetPage(
-              name: '/findFollowersPage',
-              page: () => const FindFollowersPage()),
+          GetPage(name: '/findFollowersPage', page: () => FindFollowersPage()),
         ],
       ),
     );
