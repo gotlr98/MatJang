@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,8 +19,14 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
   late List<bool> isEnabled =
       List.filled(widget.allUserMatjipList!.keys.length, true);
 
-  onPressedFunc(int index) {
+  onPressedFunc(int index, String email) async {
     if (isEnabled[index]) {
+      var following = Provider.of<UserModel>(context, listen: false).following;
+      following.add(email);
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(Provider.of<UserModel>(context, listen: false).email)
+          .update({"following": following});
       isEnabled[index] = false;
     } else {
       isEnabled[index] = true;
@@ -48,8 +55,9 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
                 trailing: Wrap(
                   children: [
                     ElevatedButton(
-                      onPressed:
-                          isEnabled[index] ? () => onPressedFunc(index) : null,
+                      onPressed: isEnabled[index]
+                          ? () => onPressedFunc(index, keys[index])
+                          : null,
                       style: ButtonStyle(
                           overlayColor:
                               MaterialStateProperty.all<Color>(Colors.black12)),

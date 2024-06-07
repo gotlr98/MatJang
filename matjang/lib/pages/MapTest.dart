@@ -44,6 +44,7 @@ class _MapTestState extends State<MapTest> {
   Map<String, Map<String, double>> get_matjip_review = {};
   final selectList = ["지도 둘러보기", "맛집 찾기"];
   var selectedValue = "맛집 찾기";
+  List<String> following = [];
 
   @override
   void initState() {
@@ -52,7 +53,26 @@ class _MapTestState extends State<MapTest> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _getUsersMatjip();
       _getUserMatjipsReview();
+      _getUsersFollowing(Get.arguments["email"]);
     });
+  }
+
+  _getUsersFollowing(String email) async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
+
+    var result = snap.docs;
+
+    for (var i in result) {
+      if (i.id == email) {
+        var getFollowing = i.data()["following"];
+
+        if (getFollowing != null) {
+          following.add(getFollowing);
+          Provider.of<UserModel>(context, listen: false)
+              .getFollowingFromFirebase(getFollowing);
+        }
+      }
+    }
   }
 
   _getUsersMatjip() async {

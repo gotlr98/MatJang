@@ -23,8 +23,6 @@ class DetailPage extends StatelessWidget {
   bool? isReviewed;
   var review;
 
-  VisibleWidget() {}
-
   @override
   Widget build(BuildContext context) {
     double rating_ = 1.0;

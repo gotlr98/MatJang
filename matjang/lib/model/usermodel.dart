@@ -13,6 +13,10 @@ class UserModel with ChangeNotifier {
   SocialType get _type => type;
   Map<String, Map<String, double>> review = {};
   Map<String, Map<String, double>> get _review => review;
+  List<String> following = [];
+  List<String> get _following => following;
+  List<String> follower = [];
+  List<String> get _follower => follower;
 
   UserModel({
     this.email,
@@ -42,6 +46,21 @@ class UserModel with ChangeNotifier {
 
   void getReviewFromFirebase(Map<String, Map<String, double>> reviews) {
     review = reviews;
+    notifyListeners();
+  }
+
+  void getFollowingFromFirebase(List<String> following) {
+    this.following = following;
+    notifyListeners();
+  }
+
+  void addFollowing(String email) {
+    following.add(email);
+    notifyListeners();
+  }
+
+  void getFollowerFromFirebase(List<String> follower) {
+    this.follower = follower;
     notifyListeners();
   }
 }
