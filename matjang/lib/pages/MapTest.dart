@@ -13,6 +13,7 @@ import 'package:matjang/pages/detailBottomSheet.dart';
 import 'package:matjang/pages/detailPage.dart';
 import 'package:matjang/pages/findFollowersPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
+import 'package:matjang/pages/userOwnReviewPage.dart';
 import 'package:provider/provider.dart';
 
 import '../model/usermodel.dart';
@@ -237,7 +238,11 @@ class _MapTestState extends State<MapTest> {
                 accountEmail: Text("$nickName 님",
                     style: const TextStyle(color: Colors.black)),
                 // onDetailsPressed: () {},
-                currentAccountPicture: const Icon(Icons.people),
+                currentAccountPicture: InkWell(
+                    onTap: () async {
+                      Get.to(() => const UserOwnReviewPage());
+                    },
+                    child: const Icon(Icons.people)),
                 currentAccountPictureSize: const Size.square(20),
                 otherAccountsPictures: [
                   InkWell(
@@ -247,7 +252,7 @@ class _MapTestState extends State<MapTest> {
                         }
                         await _getAllUsersMatjip();
 
-                        Get.to(FindFollowersPage(
+                        Get.to(() => FindFollowersPage(
                             allUserMatjipList: allUserMatjipList));
                       },
                       child: Image.asset("assets/images/followers.png")),
@@ -263,7 +268,7 @@ class _MapTestState extends State<MapTest> {
                   ),
                   IconButton(
                       onPressed: () {
-                        mapLevel = 8;
+                        mapLevel = 6;
                         markers.clear();
 
                         for (var i in myMatjipList) {
@@ -276,7 +281,7 @@ class _MapTestState extends State<MapTest> {
                         if (scaffoldKey.currentState!.isDrawerOpen) {
                           scaffoldKey.currentState!.closeDrawer();
                         }
-
+                        selectedValue = "지도 둘러보기";
                         mapController.setLevel(mapLevel);
 
                         setState(() {});
@@ -403,6 +408,7 @@ class _MapTestState extends State<MapTest> {
                   } else {
                     for (var i in get_matjip_review.keys) {
                       var reviews = get_matjip_review[i];
+                      print("review exist");
                       Get.to(
                           () => DetailPage(
                               address: address,
@@ -515,6 +521,8 @@ class _MapTestState extends State<MapTest> {
                     mapController.setCenter(center);
 
                     searchField.clear();
+
+                    selectedValue = "지도 둘러보기";
 
                     Get.bottomSheet(ConstrainedBox(
                             constraints: BoxConstraints(

@@ -23,6 +23,8 @@ class DetailPage extends StatelessWidget {
   bool? isReviewed;
   var review;
 
+  VisibleWidget() {}
+
   @override
   Widget build(BuildContext context) {
     double rating_ = 1.0;
@@ -54,90 +56,109 @@ class DetailPage extends StatelessWidget {
                       const SizedBox(
                         height: 100,
                       ),
-                      const Text("후기 남기기"),
-                      RatingBar.builder(
-                          minRating: 1,
-                          initialRating: 1,
-                          allowHalfRating: true,
-                          itemBuilder: (context, _) => const Icon(
-                                Icons.star,
-                                color: Colors.amber,
+                      Visibility(
+                          visible: !isReviewed!,
+                          child: Column(
+                            children: [
+                              const Text("후기 남기기"),
+                              RatingBar.builder(
+                                  minRating: 1,
+                                  initialRating: 1,
+                                  allowHalfRating: true,
+                                  itemBuilder: (context, _) => const Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                  onRatingUpdate: (rating) {
+                                    rating_ = rating;
+                                  }),
+                              TextField(controller: reviewField),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    if (reviewField.text.isEmpty) {
+                                      Get.snackbar("error", "리뷰를 입력해주세요");
+                                      return;
+                                    }
+                                    bool isUpdate = false;
+                                    var review = Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .review;
+
+                                    for (var i in review.keys) {
+                                      if (i == "$place_name&$address") {
+                                        Get.snackbar(
+                                            "error", "이미 리뷰를 등록한 맛집입니다");
+                                        return;
+                                      }
+                                    }
+
+                                    Map<String, double> registerReview = {};
+                                    registerReview[reviewField.text] = rating_;
+
+                                    Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .addReview("$place_name&$address",
+                                            registerReview);
+
+                                    var li = Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .review;
+
+                                    var email = Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .email;
+                                    await FirebaseFirestore.instance
+                                        .collection("users")
+                                        .doc(Provider.of<UserModel>(context,
+                                                listen: false)
+                                            .email)
+                                        .update({"review": li});
+
+                                    var test = await FirebaseFirestore.instance
+                                        .collection("matjips")
+                                        .get();
+                                    if (test.docs.isEmpty) {
+                                    } else {
+                                      for (var i in test.docs) {
+                                        if (i.id == "$place_name&$address") {
+                                          await FirebaseFirestore.instance
+                                              .collection("matjips")
+                                              .doc("$place_name&$address")
+                                              .update({
+                                            email!: {reviewField.text: rating_}
+                                          });
+                                          isUpdate = true;
+                                        }
+                                      }
+                                      if (!isUpdate) {
+                                        await FirebaseFirestore.instance
+                                            .collection("matjips")
+                                            .doc("$place_name&$address")
+                                            .set({
+                                          email!: {reviewField.text: rating_}
+                                        });
+                                      }
+                                    }
+
+                                    Get.snackbar("Success", "등록 완료되었습니다");
+                                    Get.back();
+                                  },
+                                  child: const Text("등록하기")),
+                            ],
+                          )),
+                      Visibility(
+                          visible: isReviewed!,
+                          child: Column(
+                            children: [
+                              const Text("내 리뷰"),
+                              const SizedBox(
+                                height: 20,
                               ),
-                          onRatingUpdate: (rating) {
-                            rating_ = rating;
-                          }),
-                      TextField(controller: reviewField),
-                      ElevatedButton(
-                          onPressed: () async {
-                            if (reviewField.text.isEmpty) {
-                              Get.snackbar("error", "리뷰를 입력해주세요");
-                              return;
-                            }
-                            bool isUpdate = false;
-                            var review =
-                                Provider.of<UserModel>(context, listen: false)
-                                    .review;
+                              for (var i in review.keys)
+                                Text("리뷰: $i, 평점: ${review[i]}"),
+                            ],
+                          )),
 
-                            for (var i in review.keys) {
-                              if (i == "$place_name&$address") {
-                                Get.snackbar("error", "이미 리뷰를 등록한 맛집입니다");
-                                return;
-                              }
-                            }
-
-                            Map<String, double> registerReview = {};
-                            registerReview[reviewField.text] = rating_;
-
-                            Provider.of<UserModel>(context, listen: false)
-                                .addReview(
-                                    "$place_name&$address", registerReview);
-
-                            var li =
-                                Provider.of<UserModel>(context, listen: false)
-                                    .review;
-
-                            var email =
-                                Provider.of<UserModel>(context, listen: false)
-                                    .email;
-                            await FirebaseFirestore.instance
-                                .collection("users")
-                                .doc(Provider.of<UserModel>(context,
-                                        listen: false)
-                                    .email)
-                                .update({"review": li});
-
-                            var test = await FirebaseFirestore.instance
-                                .collection("matjips")
-                                .get();
-                            if (test.docs.isEmpty) {
-                              print("blank");
-                            } else {
-                              for (var i in test.docs) {
-                                if (i.id == "$place_name&$address") {
-                                  print("doing update");
-                                  await FirebaseFirestore.instance
-                                      .collection("matjips")
-                                      .doc("$place_name&$address")
-                                      .update({
-                                    email!: {reviewField.text: rating_}
-                                  });
-                                  isUpdate = true;
-                                }
-                              }
-                              if (!isUpdate) {
-                                await FirebaseFirestore.instance
-                                    .collection("matjips")
-                                    .doc("$place_name&$address")
-                                    .set({
-                                  email!: {reviewField.text: rating_}
-                                });
-                              }
-                            }
-
-                            Get.snackbar("Success", "등록 완료되었습니다");
-                            Get.back();
-                          },
-                          child: const Text("등록하기")),
                       const SizedBox(
                         height: 100,
                       ),
