@@ -59,7 +59,7 @@ class _LoginState extends State<Login> {
                     .socialLogin(socialType: SocialType.Kakao);
 
                 Provider.of<UserModel>(context, listen: false)
-                    .setEmailAndType(user!.email!, SocialType.Kakao);
+                    .setEmailAndType(user?.email ?? "", SocialType.Kakao);
 
                 await storage.write(key: "login", value: user?.email);
 

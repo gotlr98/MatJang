@@ -35,9 +35,7 @@ class SocialLogin {
     var user = await UserApi.instance.me();
     String? email = user.kakaoAccount?.email;
 
-    return email != ''
-        ? UserModel(email: email!, type: SocialType.Kakao)
-        : null;
+    return email != '' ? UserModel(email: email, type: SocialType.Kakao) : null;
   }
 
   Future<UserModel?> _apple() async {
@@ -54,8 +52,6 @@ class SocialLogin {
     );
 
     String? email = appleCredential.email;
-    return email != ''
-        ? UserModel(email: email!, type: SocialType.Apple)
-        : null;
+    return email != '' ? UserModel(email: email, type: SocialType.Apple) : null;
   }
 }

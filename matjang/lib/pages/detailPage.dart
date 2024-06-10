@@ -45,7 +45,7 @@ class DetailPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
-                            address!,
+                            address ?? "",
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.w100),
                           ),
@@ -55,7 +55,7 @@ class DetailPage extends StatelessWidget {
                         height: 100,
                       ),
                       Visibility(
-                          visible: !isReviewed!,
+                          visible: !(isReviewed ?? false),
                           child: Column(
                             children: [
                               const Text(
@@ -135,7 +135,9 @@ class DetailPage extends StatelessWidget {
                                               .collection("matjips")
                                               .doc("$place_name&$address")
                                               .update({
-                                            email!: {reviewField.text: rating_}
+                                            email ?? "": {
+                                              reviewField.text: rating_
+                                            }
                                           });
                                           isUpdate = true;
                                         }
@@ -145,7 +147,9 @@ class DetailPage extends StatelessWidget {
                                             .collection("matjips")
                                             .doc("$place_name&$address")
                                             .set({
-                                          email!: {reviewField.text: rating_}
+                                          email ?? "": {
+                                            reviewField.text: rating_
+                                          }
                                         });
                                       }
                                     }
@@ -157,7 +161,7 @@ class DetailPage extends StatelessWidget {
                             ],
                           )),
                       Visibility(
-                          visible: isReviewed!,
+                          visible: isReviewed ?? false,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [

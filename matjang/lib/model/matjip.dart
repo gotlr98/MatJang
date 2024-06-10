@@ -37,11 +37,11 @@ class MatJip {
   }
 
   Map<String, String> toJson(MatJip matjip) => {
-        'place_name': matjip.place_name!,
-        'x': matjip.x!,
-        'y': matjip.y!,
-        'address': matjip.address!,
-        'category': matjip.category!
+        'place_name': matjip.place_name ?? "",
+        'x': matjip.x ?? "",
+        'y': matjip.y ?? "",
+        'address': matjip.address ?? "",
+        'category': matjip.category ?? ""
       };
 }
 

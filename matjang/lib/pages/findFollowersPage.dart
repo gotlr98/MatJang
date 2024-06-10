@@ -17,7 +17,7 @@ class FindFollowersPage extends StatefulWidget {
 
 class _FindFollowersPageState extends State<FindFollowersPage> {
   late List<bool> isEnabled =
-      List.filled(widget.allUserMatjipList!.keys.length, true);
+      List.filled(widget.allUserMatjipList?.keys.length ?? 0, true);
 
   onPressedFunc(int index, String email) async {
     if (isEnabled[index]) {
@@ -27,6 +27,7 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
           .collection("users")
           .doc(Provider.of<UserModel>(context, listen: false).email)
           .update({"following": following});
+      Provider.of<UserModel>(context, listen: false).addFollowing(email);
       isEnabled[index] = false;
     } else {
       isEnabled[index] = true;
@@ -44,33 +45,37 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
         },
         child: ListView.builder(
           shrinkWrap: true,
-          itemCount: widget.allUserMatjipList!.keys.length,
+          itemCount: widget.allUserMatjipList?.keys.length ?? 0,
           itemBuilder: (context, index) {
-            var keys = widget.allUserMatjipList!.keys.toList();
-            return ListTile(
-                leading: const Icon(Icons.people),
-                title: Text(keys[index].split("@")[0]),
-                subtitle: Text(
-                    "${widget.allUserMatjipList![keys[index]]!.length} 개 후기"),
-                trailing: Wrap(
-                  children: [
-                    ElevatedButton(
-                      onPressed: isEnabled[index]
-                          ? () => onPressedFunc(index, keys[index])
-                          : null,
-                      style: ButtonStyle(
-                          overlayColor:
-                              MaterialStateProperty.all<Color>(Colors.black12)),
-                      child: const Text("Follow"),
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          widget.allUserMatjipList!.remove(keys[index]);
-                          setState(() {});
-                        },
-                        icon: const Icon(Icons.cancel))
-                  ],
-                ));
+            var keys = widget.allUserMatjipList?.keys.toList() ?? [];
+            if (keys.isNotEmpty) {
+              return ListTile(
+                  leading: const Icon(Icons.people),
+                  title: Text(keys[index].split("@")[0]),
+                  subtitle: Text(
+                      "${widget.allUserMatjipList?[keys[index]]?.length} 개 후기"),
+                  trailing: Wrap(
+                    children: [
+                      ElevatedButton(
+                        onPressed: isEnabled[index]
+                            ? () => onPressedFunc(index, keys[index])
+                            : null,
+                        style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all<Color>(
+                                Colors.black12)),
+                        child: const Text("Follow"),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            widget.allUserMatjipList?.remove(keys[index]);
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.cancel))
+                    ],
+                  ));
+            } else {
+              return const Text("팔로우 할 유저가 없습니다");
+            }
           },
         ),
       ),

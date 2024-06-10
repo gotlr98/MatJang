@@ -11,15 +11,15 @@ class SearchResultPage extends StatelessWidget {
     return Scaffold(
       body: ListView(
         children: [
-          for (int i = 0; i < matjip_list!.length; i++)
+          for (int i = 0; i < (matjip_list?.length ?? 0); i++)
             InkWell(
               onTap: () {
-                Get.back(result: {"touch_result": matjip_list![i]});
+                Get.back(result: {"touch_result": matjip_list?[i]});
               },
               child: Card(
                 child: ListTile(
-                  title: Text(matjip_list![i].place_name!),
-                  subtitle: Text(matjip_list![i].address!),
+                  title: Text(matjip_list?[i].place_name ?? ""),
+                  subtitle: Text(matjip_list?[i].address ?? ""),
                 ),
               ),
             ),
