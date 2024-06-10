@@ -40,7 +40,7 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
               alignment: WrapAlignment.start,
               children: [
                 Text(
-                  widget.place_name!,
+                  widget.place_name ?? "",
                   style: const TextStyle(
                       fontSize: 25, fontWeight: FontWeight.w200),
                 ),
@@ -48,7 +48,7 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                   width: 5,
                 ),
                 Text(
-                  widget.category!,
+                  widget.category ?? "",
                   style: const TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w100),
                 )
@@ -58,7 +58,7 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
               height: 5,
             ),
             Text(
-              widget.address!,
+              widget.address ?? "",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w100),
             ),
             Row(

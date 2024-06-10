@@ -36,13 +36,13 @@ class _UserOwnReviewPageState extends State<UserOwnReviewPage> {
           const SizedBox(
             height: 15,
           ),
-          for (var i in widget.review!.keys)
+          for (var i in widget.review?.keys ?? {"null", "null"})
             Text(
-                "${i.split("&")[0]}: ${widget.review![i]!.keys}, 평점: ${widget.review![i]!.values}"),
+                "${i.split("&")[0]}: ${widget.review?[i]?.keys}, 평점: ${widget.review?[i]?.values}"),
           const SizedBox(height: 15),
           const Text("팔로잉"),
           const SizedBox(height: 15),
-          for (var i in widget.following!) Text(i)
+          for (var i in widget.following ?? []) Text(i)
         ],
       ),
     );

@@ -212,7 +212,8 @@ class _MapTestState extends State<MapTest> {
   @override
   Widget build(BuildContext context) {
     String nickName =
-        (Provider.of<UserModel>(context, listen: false).email!).split("@")[0];
+        (Provider.of<UserModel>(context, listen: false).email ?? "")
+            .split("@")[0];
     return Scaffold(
       key: scaffoldKey,
       onDrawerChanged: (isOpened) {
@@ -237,7 +238,7 @@ class _MapTestState extends State<MapTest> {
             ).toList(),
             onChanged: (value) {
               setState(() {
-                selectedValue = value!;
+                selectedValue = value ?? "";
                 if (selectedValue == "지도 둘러보기") {
                   matjipList = [];
                   markers.clear();
@@ -304,8 +305,8 @@ class _MapTestState extends State<MapTest> {
                         for (var i in myMatjipList) {
                           markers.add(Marker(
                               markerId: UniqueKey().toString(),
-                              latLng: LatLng(
-                                  double.parse(i.y!), double.parse(i.x!))));
+                              latLng: LatLng(double.parse(i.y ?? ""),
+                                  double.parse(i.x ?? ""))));
                         }
 
                         if (scaffoldKey.currentState!.isDrawerOpen) {
@@ -326,7 +327,7 @@ class _MapTestState extends State<MapTest> {
                 itemBuilder: (context, i) {
                   return ListTile(
                     title: Text(
-                      myMatjipList[i].place_name!,
+                      myMatjipList[i].place_name ?? "",
                       style: const TextStyle(fontSize: 15),
                     ),
                     leading: const Icon(Icons.food_bank),
@@ -338,12 +339,12 @@ class _MapTestState extends State<MapTest> {
                       matjipList.add(myMatjipList[i]);
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
-                        latLng: LatLng(double.parse(myMatjipList[i].y!),
-                            double.parse(myMatjipList[i].x!)),
+                        latLng: LatLng(double.parse(myMatjipList[i].y ?? ""),
+                            double.parse(myMatjipList[i].x ?? "")),
                       ));
                       if (count == 0) {
-                        center = LatLng(double.parse(myMatjipList[i].y!),
-                            double.parse(myMatjipList[i].x!));
+                        center = LatLng(double.parse(myMatjipList[i].y ?? ""),
+                            double.parse(myMatjipList[i].x ?? ""));
                         count += 1;
                       }
 
@@ -395,8 +396,8 @@ class _MapTestState extends State<MapTest> {
             }
 
             for (var i in matjipList) {
-              if (double.parse(i.x!) == marker.latLng.longitude &&
-                  double.parse(i.y!) == marker.latLng.latitude) {
+              if (double.parse(i.x ?? "") == marker.latLng.longitude &&
+                  double.parse(i.y ?? "") == marker.latLng.latitude) {
                 address = i.address;
                 placeName = i.place_name;
                 categoryName = i.category?.split(">").last;
@@ -488,7 +489,8 @@ class _MapTestState extends State<MapTest> {
                 for (var i in matjipList) {
                   markers.add(Marker(
                     markerId: UniqueKey().toString(),
-                    latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                    latLng: LatLng(
+                        double.parse(i.y ?? ""), double.parse(i.x ?? "")),
                     // infoWindowContent: i.place_name!,
                   ));
                 }
@@ -540,10 +542,12 @@ class _MapTestState extends State<MapTest> {
                     for (var i in matjipList) {
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
-                        latLng: LatLng(double.parse(i.y!), double.parse(i.x!)),
+                        latLng: LatLng(
+                            double.parse(i.y ?? ""), double.parse(i.x ?? "")),
                       ));
                       if (count == 0) {
-                        center = LatLng(double.parse(i.y!), double.parse(i.x!));
+                        center = LatLng(
+                            double.parse(i.y ?? ""), double.parse(i.x ?? ""));
                         count += 1;
                       }
                     }
