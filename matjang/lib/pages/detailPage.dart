@@ -58,7 +58,13 @@ class DetailPage extends StatelessWidget {
                           visible: !isReviewed!,
                           child: Column(
                             children: [
-                              const Text("후기 남기기"),
+                              const Text(
+                                "후기 남기기",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
                               RatingBar.builder(
                                   minRating: 1,
                                   initialRating: 1,
@@ -70,7 +76,13 @@ class DetailPage extends StatelessWidget {
                                   onRatingUpdate: (rating) {
                                     rating_ = rating;
                                   }),
+                              const SizedBox(
+                                height: 10,
+                              ),
                               TextField(controller: reviewField),
+                              const SizedBox(
+                                height: 30,
+                              ),
                               ElevatedButton(
                                   onPressed: () async {
                                     if (reviewField.text.isEmpty) {
@@ -147,13 +159,14 @@ class DetailPage extends StatelessWidget {
                       Visibility(
                           visible: isReviewed!,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const Text("내 리뷰"),
                               const SizedBox(
                                 height: 20,
                               ),
                               for (var i in review.keys)
-                                Text("리뷰: $i, 평점: ${review[i]}"),
+                                Text("$i, 평점: ${review[i]}"),
                             ],
                           )),
 

@@ -45,15 +45,17 @@ class _MapTestState extends State<MapTest> {
   final selectList = ["지도 둘러보기", "맛집 찾기"];
   var selectedValue = "맛집 찾기";
   List<String> following = [];
+  String user_email = "";
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      user_email = Get.arguments["email"];
+      _getUsersFollowing(Get.arguments["email"]);
       _getUsersMatjip();
       _getUserMatjipsReview();
-      _getUsersFollowing(Get.arguments["email"]);
     });
   }
 
@@ -61,16 +63,16 @@ class _MapTestState extends State<MapTest> {
     var snap = await FirebaseFirestore.instance.collection("users").get();
 
     var result = snap.docs;
-
+    following = [];
     for (var i in result) {
       if (i.id == email) {
-        var getFollowing = i.data()["following"];
-
-        if (getFollowing != null) {
-          following.add(getFollowing);
-          Provider.of<UserModel>(context, listen: false)
-              .getFollowingFromFirebase(getFollowing);
+        var getFollowing = List<String>.from(i.data()["following"]);
+        for (var i in getFollowing) {
+          following.add(i);
         }
+
+        Provider.of<UserModel>(context, listen: false)
+            .getFollowingFromFirebase(getFollowing);
       }
     }
   }
@@ -81,7 +83,7 @@ class _MapTestState extends State<MapTest> {
     var result = snap.docs;
     myMatjipList = [];
     for (var i in result) {
-      if (i.id == Get.arguments["email"]) {
+      if (i.id == user_email) {
         var getMatjip = i.data()["matjip"];
 
         if (getMatjip != null) {
@@ -104,12 +106,15 @@ class _MapTestState extends State<MapTest> {
   }
 
   _getAllUsersMatjip() async {
+    _getUsersFollowing(user_email);
     var snap = await FirebaseFirestore.instance.collection("users").get();
 
     var result = snap.docs;
     allUserMatjipList = {};
     for (var i in result) {
-      if (i.id != Get.arguments["email"] && i.data()["matjip"] != null) {
+      if (i.id != user_email &&
+          i.data()["matjip"] != null &&
+          !following.contains(i.id)) {
         var getMatjip = i.data()["matjip"];
 
         if (getMatjip != null) {
@@ -136,7 +141,7 @@ class _MapTestState extends State<MapTest> {
     var result = snap.docs;
 
     for (var i in result) {
-      if (i.id == Get.arguments["email"]) {
+      if (i.id == user_email) {
         var getReview = i.data()["review"];
         if (getReview != null) {
           for (var i in getReview.keys) {
@@ -260,7 +265,12 @@ class _MapTestState extends State<MapTest> {
                 // onDetailsPressed: () {},
                 currentAccountPicture: InkWell(
                     onTap: () async {
-                      Get.to(() => const UserOwnReviewPage());
+                      _getUserMatjipsReview();
+                      _getUsersFollowing(user_email);
+                      Get.to(() => UserOwnReviewPage(
+                            review: get_matjip_review,
+                            following: following,
+                          ));
                     },
                     child: const Icon(Icons.people)),
                 currentAccountPictureSize: const Size.square(20),
