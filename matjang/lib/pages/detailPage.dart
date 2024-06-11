@@ -21,7 +21,7 @@ class DetailPage extends StatelessWidget {
   String? category;
   bool? isRegister;
   bool? isReviewed;
-  var review;
+  Map<String, double>? review;
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +169,8 @@ class DetailPage extends StatelessWidget {
                               const SizedBox(
                                 height: 20,
                               ),
-                              for (var i in review.keys)
-                                Text("$i, 평점: ${review[i]}"),
+                              for (var i in review?.keys ?? {""})
+                                Text("$i, 평점: ${review?[i]}"),
                             ],
                           )),
 

@@ -434,7 +434,7 @@ class _MapTestState extends State<MapTest> {
                             isRegister: isRegister,
                             isReviewed: isReviewed,
                             category: categoryName,
-                            review: const []),
+                            review: const {}),
                         transition: Transition.circularReveal);
                   } else {
                     for (var i in get_matjip_review.keys) {

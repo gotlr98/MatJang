@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:matjang/model/socialLogin.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../model/usermodel.dart';
 
@@ -58,22 +59,50 @@ class _LoginState extends State<Login> {
                 user = await SocialLogin()
                     .socialLogin(socialType: SocialType.Kakao);
 
-                Provider.of<UserModel>(context, listen: false)
-                    .setEmailAndType(user?.email ?? "", SocialType.Kakao);
+                if (user?.email != null) {
+                  Provider.of<UserModel>(context, listen: false)
+                      .setEmailAndType(user?.email ?? "", SocialType.Kakao);
 
-                await storage.write(key: "login", value: user?.email);
+                  await storage.write(key: "login", value: user?.email);
 
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(user?.email)
-                    .set({});
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(user?.email)
+                      .set({"matjip": [], "following": [], "review": {}});
 
-                setState(() {});
+                  setState(() {});
 
-                Get.toNamed("/mapTest", arguments: {"email": user?.email});
+                  Get.toNamed("/mapTest", arguments: {"email": user?.email});
+                } else {
+                  return;
+                }
               },
               child:
                   Image.asset("assets/images/kakao_login_medium_narrow.png")),
+          SignInWithAppleButton(onPressed: () async {
+            user =
+                await SocialLogin().socialLogin(socialType: SocialType.Apple);
+
+            if (user?.email != null) {
+              Provider.of<UserModel>(context, listen: false)
+                  .setEmailAndType(user?.email ?? "", SocialType.Apple);
+
+              print(user?.email);
+
+              await storage.write(key: "login", value: user?.email);
+
+              FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(user?.email)
+                  .set({"matjip": [], "following": [], "review": {}});
+
+              setState(() {});
+
+              Get.toNamed("/mapTest", arguments: {"email": user?.email});
+            } else {
+              return;
+            }
+          })
         ],
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -52,6 +54,24 @@ class SocialLogin {
     );
 
     String? email = appleCredential.email;
-    return email != '' ? UserModel(email: email, type: SocialType.Apple) : null;
+
+    if (email == null) {
+      List<String> jwt = appleCredential.identityToken?.split('.') ?? [];
+      String payload = jwt[1];
+      payload = base64.normalize(payload);
+
+      final List<int> jsonData = base64.decode(payload);
+      final userInfo = jsonDecode(utf8.decode(jsonData));
+      print(userInfo);
+      String email_ = userInfo['email'];
+
+      return email_ != ''
+          ? UserModel(email: email_, type: SocialType.Apple)
+          : null;
+    } else {
+      return email != ''
+          ? UserModel(email: email, type: SocialType.Apple)
+          : null;
+    }
   }
 }
