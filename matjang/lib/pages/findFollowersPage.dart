@@ -25,7 +25,8 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
       following.add(email);
       await FirebaseFirestore.instance
           .collection("users")
-          .doc(Provider.of<UserModel>(context, listen: false).email)
+          .doc(
+              "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
           .update({"following": following});
       Provider.of<UserModel>(context, listen: false).addFollowing(email);
       isEnabled[index] = false;

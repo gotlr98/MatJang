@@ -102,9 +102,8 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
 
                                 await FirebaseFirestore.instance
                                     .collection("users")
-                                    .doc(Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .email)
+                                    .doc(
+                                        "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
                                     .update({"matjip": li});
                                 Get.back();
 

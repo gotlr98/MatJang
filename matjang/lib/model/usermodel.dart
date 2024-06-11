@@ -63,4 +63,15 @@ class UserModel with ChangeNotifier {
     this.follower = follower;
     notifyListeners();
   }
+
+  String getSocialType() {
+    switch (type) {
+      case SocialType.Apple:
+        return "apple";
+      case SocialType.Kakao:
+        return "kakao";
+      case SocialType.Guest:
+        return "guest";
+    }
+  }
 }

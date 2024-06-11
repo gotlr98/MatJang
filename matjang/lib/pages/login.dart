@@ -37,14 +37,21 @@ class _LoginState extends State<Login> {
     //read 함수를 통하여 key값에 맞는 정보를 불러오게 됩니다. 이때 불러오는 결과의 타입은 String 타입임을 기억해야 합니다.
     //(데이터가 없을때는 null을 반환을 합니다.)
     // await storage.deleteAll();
-    var login = await storage.read(key: "login");
+    var loginKakao = await storage.read(key: "login-kakao");
+    var loginApple = await storage.read(key: "login-apple");
+
     //user의 정보가 있다면 바로 로그아웃 페이지로 넝어가게 합니다.
-    if (login != null) {
+    if (loginKakao != null) {
       // var result = await FirebaseFirestore.instance.collection("users").doc(login).get();
       Provider.of<UserModel>(context, listen: false)
-          .setEmailAndType(login, SocialType.Kakao);
+          .setEmailAndType(loginKakao, SocialType.Kakao);
 
-      Get.toNamed("/mapTest", arguments: {"email": login});
+      Get.toNamed("/mapTest", arguments: {"email": "$loginKakao&kakao"});
+    } else if (loginApple != null) {
+      Provider.of<UserModel>(context, listen: false)
+          .setEmailAndType(loginApple, SocialType.Apple);
+
+      Get.toNamed("/mapTest", arguments: {"email": "$loginApple&apple"});
     }
   }
 
@@ -63,22 +70,24 @@ class _LoginState extends State<Login> {
                   Provider.of<UserModel>(context, listen: false)
                       .setEmailAndType(user?.email ?? "", SocialType.Kakao);
 
-                  await storage.write(key: "login", value: user?.email);
+                  await storage.write(key: "login-kakao", value: user?.email);
 
                   FirebaseFirestore.instance
                       .collection("users")
-                      .doc(user?.email)
+                      .doc("${user?.email}&kakao")
                       .set({"matjip": [], "following": [], "review": {}});
 
                   setState(() {});
 
-                  Get.toNamed("/mapTest", arguments: {"email": user?.email});
+                  Get.toNamed("/mapTest",
+                      arguments: {"email": "${user?.email}&kakao"});
                 } else {
                   return;
                 }
               },
-              child:
-                  Image.asset("assets/images/kakao_login_medium_narrow.png")),
+              child: Image.asset("assets/images/kakao_login_medium_narrow.png",
+                  width: 200, fit: BoxFit.contain)),
+          const SizedBox(height: 30),
           SignInWithAppleButton(onPressed: () async {
             user =
                 await SocialLogin().socialLogin(socialType: SocialType.Apple);
@@ -87,18 +96,17 @@ class _LoginState extends State<Login> {
               Provider.of<UserModel>(context, listen: false)
                   .setEmailAndType(user?.email ?? "", SocialType.Apple);
 
-              print(user?.email);
-
-              await storage.write(key: "login", value: user?.email);
+              await storage.write(key: "login-apple", value: user?.email);
 
               FirebaseFirestore.instance
                   .collection("users")
-                  .doc(user?.email)
+                  .doc("${user?.email}&apple")
                   .set({"matjip": [], "following": [], "review": {}});
 
               setState(() {});
 
-              Get.toNamed("/mapTest", arguments: {"email": user?.email});
+              Get.toNamed("/mapTest",
+                  arguments: {"email": "${user?.email}&apple"});
             } else {
               return;
             }

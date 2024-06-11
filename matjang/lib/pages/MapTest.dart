@@ -142,6 +142,7 @@ class _MapTestState extends State<MapTest> {
 
     for (var i in result) {
       if (i.id == user_email) {
+        print("yes");
         var getReview = i.data()["review"];
         if (getReview != null) {
           for (var i in getReview.keys) {

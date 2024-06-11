@@ -114,14 +114,12 @@ class DetailPage extends StatelessWidget {
                                             listen: false)
                                         .review;
 
-                                    var email = Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .email;
+                                    var email =
+                                        "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}";
                                     await FirebaseFirestore.instance
                                         .collection("users")
-                                        .doc(Provider.of<UserModel>(context,
-                                                listen: false)
-                                            .email)
+                                        .doc(
+                                            "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
                                         .update({"review": li});
 
                                     var test = await FirebaseFirestore.instance
