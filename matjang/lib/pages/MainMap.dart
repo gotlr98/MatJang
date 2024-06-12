@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
@@ -13,7 +11,7 @@ import 'package:matjang/pages/detailBottomSheet.dart';
 import 'package:matjang/pages/detailPage.dart';
 import 'package:matjang/pages/findFollowersPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
-import 'package:matjang/pages/userOwnReviewPage.dart';
+import 'package:matjang/pages/userOwnDetailPage.dart';
 import 'package:provider/provider.dart';
 
 import '../model/usermodel.dart';
@@ -268,7 +266,7 @@ class _MainMapState extends State<MainMap> {
                     onTap: () async {
                       _getUserMatjipsReview();
                       _getUsersFollowing(user_email);
-                      Get.to(() => UserOwnReviewPage(
+                      Get.to(() => UserOwnDetailPage(
                             review: get_matjip_review,
                             following: following,
                           ));
