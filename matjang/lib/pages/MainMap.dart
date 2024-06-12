@@ -18,14 +18,14 @@ import 'package:provider/provider.dart';
 
 import '../model/usermodel.dart';
 
-class MapTest extends StatefulWidget {
-  const MapTest({super.key});
+class MainMap extends StatefulWidget {
+  const MainMap({super.key});
 
   @override
-  State<MapTest> createState() => _MapTestState();
+  State<MainMap> createState() => _MainMapState();
 }
 
-class _MapTestState extends State<MapTest> {
+class _MainMapState extends State<MainMap> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late KakaoMapController mapController;
   TextEditingController searchField = TextEditingController();
@@ -142,7 +142,6 @@ class _MapTestState extends State<MapTest> {
 
     for (var i in result) {
       if (i.id == user_email) {
-        print("yes");
         var getReview = i.data()["review"];
         if (getReview != null) {
           for (var i in getReview.keys) {
@@ -384,6 +383,7 @@ class _MapTestState extends State<MapTest> {
             String? y;
             bool isRegister = false;
             bool isReviewed = false;
+            bool isGuest = false;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -424,6 +424,12 @@ class _MapTestState extends State<MapTest> {
               }
             }
 
+            var checkGuest =
+                Provider.of<UserModel>(context, listen: false).getSocialType();
+            if (checkGuest == "guest") {
+              isGuest = true;
+            }
+
             if (address != null && placeName != null) {
               Get.bottomSheet(GestureDetector(
                 onTap: () {
@@ -435,7 +441,8 @@ class _MapTestState extends State<MapTest> {
                             isRegister: isRegister,
                             isReviewed: isReviewed,
                             category: categoryName,
-                            review: const {}),
+                            review: const {},
+                            isGuest: isGuest),
                         transition: Transition.circularReveal);
                   } else {
                     for (var i in get_matjip_review.keys) {
@@ -448,7 +455,8 @@ class _MapTestState extends State<MapTest> {
                               isRegister: isRegister,
                               isReviewed: isReviewed,
                               category: categoryName,
-                              review: reviews),
+                              review: reviews,
+                              isGuest: isGuest),
                           transition: Transition.cupertino);
                     }
                   }
@@ -462,6 +470,7 @@ class _MapTestState extends State<MapTest> {
                     x: x,
                     y: y,
                     isRegister: isRegister,
+                    isGuest: isGuest,
                   ),
                 ),
               ));

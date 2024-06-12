@@ -29,7 +29,7 @@ class _LoginState extends State<Login> {
 
     //비동기로 flutter secure storage 정보를 불러오는 작업.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _asyncMethod();
+      // _asyncMethod();
     });
   }
 
@@ -46,12 +46,12 @@ class _LoginState extends State<Login> {
       Provider.of<UserModel>(context, listen: false)
           .setEmailAndType(loginKakao, SocialType.Kakao);
 
-      Get.toNamed("/mapTest", arguments: {"email": "$loginKakao&kakao"});
+      Get.toNamed("/mainMap", arguments: {"email": "$loginKakao&kakao"});
     } else if (loginApple != null) {
       Provider.of<UserModel>(context, listen: false)
           .setEmailAndType(loginApple, SocialType.Apple);
 
-      Get.toNamed("/mapTest", arguments: {"email": "$loginApple&apple"});
+      Get.toNamed("/mainMap", arguments: {"email": "$loginApple&apple"});
     }
   }
 
@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
 
                   setState(() {});
 
-                  Get.toNamed("/mapTest",
+                  Get.toNamed("/mainMap",
                       arguments: {"email": "${user?.email}&kakao"});
                 } else {
                   return;
@@ -105,12 +105,21 @@ class _LoginState extends State<Login> {
 
               setState(() {});
 
-              Get.toNamed("/mapTest",
+              Get.toNamed("/mainMap",
                   arguments: {"email": "${user?.email}&apple"});
             } else {
               return;
             }
-          })
+          }),
+          const SizedBox(height: 30),
+          ElevatedButton(
+              onPressed: () {
+                Provider.of<UserModel>(context, listen: false)
+                    .setEmailAndType("guest", SocialType.Guest);
+                Get.toNamed("/mainMap",
+                    arguments: {"email": "guest@guest.com"});
+              },
+              child: const Text("Guest Login"))
         ],
       ),
     );

@@ -14,7 +14,8 @@ class DetailPage extends StatelessWidget {
       this.isRegister,
       this.isReviewed,
       this.category,
-      this.review});
+      this.review,
+      this.isGuest = false});
 
   String? place_name;
   String? address;
@@ -22,6 +23,7 @@ class DetailPage extends StatelessWidget {
   bool? isRegister;
   bool? isReviewed;
   Map<String, double>? review;
+  bool isGuest;
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +87,16 @@ class DetailPage extends StatelessWidget {
                               ),
                               ElevatedButton(
                                   onPressed: () async {
+                                    if (isGuest) {
+                                      Get.snackbar(
+                                          "error", "Guest는 사용할 수 없는 기능입니다");
+                                      return;
+                                    }
                                     if (reviewField.text.isEmpty) {
                                       Get.snackbar("error", "리뷰를 입력해주세요");
                                       return;
                                     }
+
                                     bool isUpdate = false;
                                     var review = Provider.of<UserModel>(context,
                                             listen: false)

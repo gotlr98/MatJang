@@ -13,10 +13,9 @@ import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
+import 'pages/MainMap.dart';
 import 'pages/detailPage.dart';
 import 'pages/login.dart';
-import 'pages/mapTest.dart';
-import 'pages/test.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,8 +50,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         getPages: [
           GetPage(name: '/', page: () => const Login()),
-          GetPage(name: '/test', page: () => const Test()),
-          GetPage(name: '/mapTest', page: () => const MapTest()),
+          GetPage(name: '/mainMap', page: () => const MainMap()),
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
           GetPage(name: '/detailPage', page: () => DetailPage()),
           GetPage(name: '/findFollowersPage', page: () => FindFollowersPage()),
