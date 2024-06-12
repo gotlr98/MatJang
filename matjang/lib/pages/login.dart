@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:matjang/model/socialLogin.dart';
@@ -7,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../model/usermodel.dart';
+import 'dart:io';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -29,7 +31,7 @@ class _LoginState extends State<Login> {
 
     //비동기로 flutter secure storage 정보를 불러오는 작업.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _asyncMethod();
+      _asyncMethod();
     });
   }
 
@@ -88,29 +90,32 @@ class _LoginState extends State<Login> {
               child: Image.asset("assets/images/kakao_login_medium_narrow.png",
                   width: 200, fit: BoxFit.contain)),
           const SizedBox(height: 30),
-          SignInWithAppleButton(onPressed: () async {
-            user =
-                await SocialLogin().socialLogin(socialType: SocialType.Apple);
+          Visibility(
+            visible: Platform.isIOS,
+            child: SignInWithAppleButton(onPressed: () async {
+              user =
+                  await SocialLogin().socialLogin(socialType: SocialType.Apple);
 
-            if (user?.email != null) {
-              Provider.of<UserModel>(context, listen: false)
-                  .setEmailAndType(user?.email ?? "", SocialType.Apple);
+              if (user?.email != null) {
+                Provider.of<UserModel>(context, listen: false)
+                    .setEmailAndType(user?.email ?? "", SocialType.Apple);
 
-              await storage.write(key: "login-apple", value: user?.email);
+                await storage.write(key: "login-apple", value: user?.email);
 
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc("${user?.email}&apple")
-                  .set({"matjip": [], "following": [], "review": {}});
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc("${user?.email}&apple")
+                    .set({"matjip": [], "following": [], "review": {}});
 
-              setState(() {});
+                setState(() {});
 
-              Get.toNamed("/mainMap",
-                  arguments: {"email": "${user?.email}&apple"});
-            } else {
-              return;
-            }
-          }),
+                Get.toNamed("/mainMap",
+                    arguments: {"email": "${user?.email}&apple"});
+              } else {
+                return;
+              }
+            }),
+          ),
           const SizedBox(height: 30),
           ElevatedButton(
               onPressed: () {

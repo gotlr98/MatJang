@@ -29,6 +29,7 @@ android {
     namespace "com.example.matjang"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    namespace "kakao_map_plugin"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -68,4 +69,4 @@ flutter {
 }
 
 dependencies {}
-apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"
+// apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"

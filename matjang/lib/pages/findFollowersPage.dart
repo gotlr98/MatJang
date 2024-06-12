@@ -8,9 +8,10 @@ import '../model/matjip.dart';
 import '../model/usermodel.dart';
 
 class FindFollowersPage extends StatefulWidget {
-  FindFollowersPage({super.key, this.allUserMatjipList});
+  FindFollowersPage({super.key, this.allUserMatjipList, this.isGuest = false});
 
   Map<String, List<MatJip>>? allUserMatjipList = {};
+  bool isGuest;
   @override
   State<FindFollowersPage> createState() => _FindFollowersPageState();
 }
@@ -19,7 +20,11 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
   late List<bool> isEnabled =
       List.filled(widget.allUserMatjipList?.keys.length ?? 0, true);
 
-  onPressedFunc(int index, String email) async {
+  onPressedFunc(int index, String email, bool isGuest) async {
+    if (isGuest) {
+      Get.snackbar("error", "Guest는 사용할 수 없는 기능입니다");
+      return;
+    }
     if (isEnabled[index]) {
       var following = Provider.of<UserModel>(context, listen: false).following;
       following.add(email);
@@ -59,7 +64,8 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
                     children: [
                       ElevatedButton(
                         onPressed: isEnabled[index]
-                            ? () => onPressedFunc(index, keys[index])
+                            ? () => onPressedFunc(
+                                index, keys[index], widget.isGuest)
                             : null,
                         style: ButtonStyle(
                             overlayColor: MaterialStateProperty.all<Color>(

@@ -44,6 +44,7 @@ class _MainMapState extends State<MainMap> {
   var selectedValue = "맛집 찾기";
   List<String> following = [];
   String user_email = "";
+  bool isGuest = false;
 
   @override
   void initState() {
@@ -51,6 +52,10 @@ class _MainMapState extends State<MainMap> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       user_email = Get.arguments["email"];
+      if (Provider.of<UserModel>(context, listen: false).getSocialType() ==
+          "guest") {
+        isGuest = true;
+      }
       _getUsersFollowing(Get.arguments["email"]);
       _getUsersMatjip();
       _getUserMatjipsReview();
@@ -282,7 +287,8 @@ class _MainMapState extends State<MainMap> {
                         await _getAllUsersMatjip();
 
                         Get.to(() => FindFollowersPage(
-                            allUserMatjipList: allUserMatjipList));
+                            allUserMatjipList: allUserMatjipList,
+                            isGuest: isGuest));
                       },
                       child: Image.asset("assets/images/followers.png")),
                 ],
@@ -381,7 +387,6 @@ class _MainMapState extends State<MainMap> {
             String? y;
             bool isRegister = false;
             bool isReviewed = false;
-            bool isGuest = false;
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
@@ -420,12 +425,6 @@ class _MainMapState extends State<MainMap> {
               if (i == "$placeName&$address") {
                 isReviewed = true;
               }
-            }
-
-            var checkGuest =
-                Provider.of<UserModel>(context, listen: false).getSocialType();
-            if (checkGuest == "guest") {
-              isGuest = true;
             }
 
             if (address != null && placeName != null) {
