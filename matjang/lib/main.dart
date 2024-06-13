@@ -9,6 +9,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:matjang/model/usermodel.dart';
 import 'package:matjang/pages/findFollowersPage.dart';
+import 'package:matjang/pages/initLodingPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
@@ -46,10 +47,11 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => UserModel(type: SocialType.Guest),
       child: GetMaterialApp(
-        home: const Login(),
+        home: const InitLodingPage(),
         initialRoute: '/',
         getPages: [
-          GetPage(name: '/', page: () => const Login()),
+          GetPage(name: '/', page: () => const InitLodingPage()),
+          GetPage(name: "/login", page: () => const Login()),
           GetPage(name: '/mainMap', page: () => const MainMap()),
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
           GetPage(name: '/detailPage', page: () => DetailPage()),
