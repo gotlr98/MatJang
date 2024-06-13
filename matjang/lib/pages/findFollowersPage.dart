@@ -44,7 +44,11 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Follower 찾기")),
+      appBar: AppBar(
+          title: const Text(
+        "Follower 찾기",
+        style: TextStyle(letterSpacing: 3.0, fontSize: 14),
+      )),
       body: RefreshIndicator.adaptive(
         onRefresh: () async {
           setState(() {});

@@ -38,23 +38,34 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              direction: Axis.horizontal,
-              alignment: WrapAlignment.start,
+            Row(
               children: [
-                Text(
-                  widget.place_name ?? "",
-                  style: const TextStyle(
-                      fontSize: 25, fontWeight: FontWeight.w200),
+                Wrap(
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.start,
+                  children: [
+                    Text(
+                      widget.place_name ?? "",
+                      style: const TextStyle(
+                          fontSize: 25, fontWeight: FontWeight.w200),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          widget.category ?? "",
+                          style: const TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w100),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  widget.category ?? "",
-                  style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w100),
-                )
               ],
             ),
             const SizedBox(

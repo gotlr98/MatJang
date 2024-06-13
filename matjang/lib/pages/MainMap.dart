@@ -198,7 +198,6 @@ class _MainMapState extends State<MainMap> {
       if (response.statusCode == 200) {
         matjipList += MatJip().matjipDatasFromJson(response.body);
       } else {
-        print(response.statusCode);
         break;
       }
       if (check["meta"]["is_end"] == true) {
@@ -227,7 +226,10 @@ class _MainMapState extends State<MainMap> {
         });
       },
       appBar: AppBar(
-        title: const Text("맛장"),
+        title: const Text(
+          "맛장",
+          style: TextStyle(letterSpacing: 3.0, fontSize: 18),
+        ),
         actions: [
           DropdownButton(
             value: selectedValue,
@@ -444,7 +446,6 @@ class _MainMapState extends State<MainMap> {
                   } else {
                     for (var i in get_matjip_review.keys) {
                       var reviews = get_matjip_review[i];
-                      print("review exist");
                       Get.to(
                           () => DetailPage(
                               address: address,
@@ -541,6 +542,11 @@ class _MainMapState extends State<MainMap> {
                     markers.clear();
                     var cen = await mapController.getCenter();
                     await coord2Keyword(searchField.text, cen);
+
+                    if (searchField.text.isEmpty) {
+                      Get.snackbar("실패", "검색어를 입력해주세요");
+                      return;
+                    }
 
                     if (matjipList.isEmpty) {
                       Get.snackbar("실패", "검색 결과가 없습니다");

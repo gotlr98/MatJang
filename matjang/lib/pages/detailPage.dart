@@ -159,9 +159,8 @@ class DetailPage extends StatelessWidget {
                                         });
                                       }
                                     }
-
-                                    Get.snackbar("Success", "등록 완료되었습니다");
                                     Get.back();
+                                    Get.snackbar("Success", "등록 완료되었습니다");
                                   },
                                   child: const Text("등록하기")),
                             ],

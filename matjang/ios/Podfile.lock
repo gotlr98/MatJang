@@ -1031,9 +1031,6 @@ PODS:
   - flutter_inappwebview_ios/Core (0.0.1):
     - Flutter
     - OrderedSet (~> 5.0)
-  - flutter_naver_map (1.0.0):
-    - Flutter
-    - NMapsMap (= 3.17.0)
   - flutter_secure_storage (6.0.0):
     - Flutter
   - GoogleUtilities/AppDelegateSwizzler (7.13.3):
@@ -1147,9 +1144,6 @@ PODS:
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
-  - NMapsGeometry (1.0.2)
-  - NMapsMap (3.17.0):
-    - NMapsGeometry
   - OrderedSet (5.0.0)
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -1171,7 +1165,6 @@ DEPENDENCIES:
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
-  - flutter_naver_map (from `.symlinks/plugins/flutter_naver_map/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - kakao_flutter_sdk_common (from `.symlinks/plugins/kakao_flutter_sdk_common/ios`)
   - kakao_map_plugin (from `.symlinks/plugins/kakao_map_plugin/ios`)
@@ -1201,8 +1194,6 @@ SPEC REPOS:
     - GTMSessionFetcher
     - leveldb-library
     - nanopb
-    - NMapsGeometry
-    - NMapsMap
     - OrderedSet
     - PromisesObjC
     - RecaptchaInterop
@@ -1220,8 +1211,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_inappwebview_ios:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
-  flutter_naver_map:
-    :path: ".symlinks/plugins/flutter_naver_map/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   kakao_flutter_sdk_common:
@@ -1257,7 +1246,6 @@ SPEC CHECKSUMS:
   FirebaseStorage: 44f4e25073f6fa0d4d8c09f5bec299ee9e4eb985
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
-  flutter_naver_map: b18663bc83c2caaab484c58dccf239a87ebbed1b
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   "gRPC-C++": e725ef63c4475d7cdb7e2cf16eb0fde84bd9ee51
@@ -1267,8 +1255,6 @@ SPEC CHECKSUMS:
   kakao_map_plugin: 232bc2486ea3ffb5d44c49eac1bcc6dde1a7f0ee
   leveldb-library: e8eadf9008a61f9e1dde3978c086d2b6d9b9dc28
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  NMapsGeometry: 4e02554fa9880ef02ed96b075dc84355d6352479
-  NMapsMap: a5b909a31b6f3d27a670f6eb2ddc913c38975474
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
