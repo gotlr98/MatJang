@@ -67,57 +67,57 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                 },
                 icon: const Icon(Icons.notification_important))
           ]),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            const Text(
-              "내 리뷰",
-              style: TextStyle(fontSize: 25),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            for (var i in widget.review?.keys ?? {"null", "null"})
-              Text(i.split("&")[0]),
-            const SizedBox(height: 8),
-            for (var i in widget.review?.keys ?? {"null", "null"})
-              RatingBar.builder(
-                minRating: 1,
-                initialRating: double.parse((widget.review?[i]?.values)
-                    .toString()
-                    .replaceAll("(", "")
-                    .replaceAll(")", "")),
-                allowHalfRating: true,
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (rating) {
-                  rating_ = rating;
-                },
-                ignoreGestures: true,
-                itemSize: 20,
+      body: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 50,
               ),
-            const SizedBox(height: 8),
-            for (var i in widget.review?.keys ?? {"null", "null"})
-              Text(
-                  "${(widget.review?[i]?.keys).toString().replaceAll("(", "").replaceAll(")", "")} "),
-
-            // ${(widget.review?[i]?.values).toString().replaceAll("(", "").replaceAll(")", "")} 평점
-
-            //"${(widget.review?[i]?.keys).toString().replaceAll("(", "").replaceAll(")", "")} " 리뷰
-            const SizedBox(height: 50),
-            const Text("팔로잉", style: TextStyle(fontSize: 25)),
-            const SizedBox(height: 15),
-            for (var i in widget.following ?? [])
-              Text("${i.split("@")[0]}님 from ${i.split("&").last}")
-          ],
+              const Text(
+                "내 리뷰",
+                style: TextStyle(fontSize: 25),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              for (var i in widget.review?.keys ?? {"null", "null"}) ...[
+                Text(i.split("&")[0]),
+                const SizedBox(height: 8),
+                for (var j in widget.review![i]!.values) ...[
+                  RatingBar.builder(
+                    minRating: 1,
+                    initialRating: double.parse(
+                        (j).toString().replaceAll("(", "").replaceAll(")", "")),
+                    allowHalfRating: true,
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                    ),
+                    onRatingUpdate: (rating) {
+                      rating_ = rating;
+                    },
+                    ignoreGestures: true,
+                    itemSize: 20,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                      "${(widget.review?[i]?.keys).toString().replaceAll("(", "").replaceAll(")", "")} "),
+                  const Divider(
+                    thickness: 1,
+                  ),
+                ]
+              ],
+              const SizedBox(height: 50),
+              const Text("팔로잉", style: TextStyle(fontSize: 25)),
+              const SizedBox(height: 15),
+              for (var i in widget.following ?? [])
+                Text("${i.split("@")[0]}님 from ${i.split("&").last}"),
+            ],
+          ),
         ),
       ),
     );
