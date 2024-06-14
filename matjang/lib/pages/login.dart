@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
 
     //비동기로 flutter secure storage 정보를 불러오는 작업.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _asyncMethod();
+      _asyncMethod();
     });
   }
 

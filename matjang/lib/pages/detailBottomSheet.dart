@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -40,32 +41,28 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
           children: [
             Row(
               children: [
-                Wrap(
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.start,
-                  children: [
-                    Text(
-                      widget.place_name ?? "",
-                      style: const TextStyle(
-                          fontSize: 25, fontWeight: FontWeight.w200),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Column(
-                      children: [
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          widget.category ?? "",
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w100),
-                        ),
-                      ],
-                    )
-                  ],
+                Flexible(
+                  child: Text(
+                    widget.place_name ?? "",
+                    style: const TextStyle(
+                        fontSize: 25, fontWeight: FontWeight.w200),
+                  ),
                 ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      widget.category ?? "",
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w100),
+                    ),
+                  ],
+                )
               ],
             ),
             const SizedBox(

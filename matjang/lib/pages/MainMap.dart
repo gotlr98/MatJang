@@ -59,6 +59,8 @@ class _MainMapState extends State<MainMap> {
       _getUsersFollowing(Get.arguments["email"]);
       _getUsersMatjip();
       _getUserMatjipsReview();
+
+      setState(() {});
     });
   }
 
@@ -222,6 +224,9 @@ class _MainMapState extends State<MainMap> {
         setState(() {
           if (isOpened == true) {
             _getUsersMatjip();
+          } else {
+            matjipList = [];
+            markers.clear();
           }
         });
       },
