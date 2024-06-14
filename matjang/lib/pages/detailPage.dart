@@ -130,35 +130,18 @@ class DetailPage extends StatelessWidget {
                                             "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
                                         .update({"review": li});
 
-                                    var test = await FirebaseFirestore.instance
+                                    // var test = await FirebaseFirestore.instance
+                                    //     .collection("matjips")
+                                    //     .get();
+
+                                    await FirebaseFirestore.instance
                                         .collection("matjips")
-                                        .get();
-                                    if (test.docs.isEmpty) {
-                                    } else {
-                                      for (var i in test.docs) {
-                                        if (i.id == "$place_name&$address") {
-                                          await FirebaseFirestore.instance
-                                              .collection("matjips")
-                                              .doc("$place_name&$address")
-                                              .update({
-                                            email ?? "": {
-                                              reviewField.text: rating_
-                                            }
-                                          });
-                                          isUpdate = true;
-                                        }
-                                      }
-                                      if (!isUpdate) {
-                                        await FirebaseFirestore.instance
-                                            .collection("matjips")
-                                            .doc("$place_name&$address")
-                                            .set({
-                                          email ?? "": {
-                                            reviewField.text: rating_
-                                          }
-                                        });
-                                      }
-                                    }
+                                        .doc("$place_name&$address")
+                                        .set({
+                                      email ?? "": {reviewField.text: rating_},
+                                    }, SetOptions(merge: true));
+                                    isUpdate = true;
+
                                     Get.back();
                                     Get.snackbar("Success", "등록 완료되었습니다");
                                   },

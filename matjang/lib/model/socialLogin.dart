@@ -62,7 +62,6 @@ class SocialLogin {
 
       final List<int> jsonData = base64.decode(payload);
       final userInfo = jsonDecode(utf8.decode(jsonData));
-      print(userInfo);
       String email_ = userInfo['email'];
 
       return email_ != ''
