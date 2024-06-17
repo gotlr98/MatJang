@@ -64,6 +64,15 @@ class UserModel with ChangeNotifier {
     notifyListeners();
   }
 
+  void withDrawerAccount() {
+    email = "";
+    follower = [];
+    following = [];
+    matjipList = [];
+    review = {};
+    type = SocialType.Guest;
+  }
+
   String getSocialType() {
     switch (type) {
       case SocialType.Apple:

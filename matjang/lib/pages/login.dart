@@ -32,7 +32,7 @@ class _LoginState extends State<Login> {
 
     //비동기로 flutter secure storage 정보를 불러오는 작업.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // _asyncMethod();
+      _asyncMethod();
     });
   }
 
@@ -60,90 +60,109 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-            child: IconButton(
-                onPressed: () async {
+    return MaterialApp(
+      theme: ThemeData(scaffoldBackgroundColor: Colors.limeAccent[100]),
+      home: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "맛짱",
+                  style: TextStyle(
+                      fontSize: 50,
+                      letterSpacing: 10,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 100,
+            ),
+            Container(
+              child: IconButton(
+                  onPressed: () async {
+                    user = await SocialLogin()
+                        .socialLogin(socialType: SocialType.Kakao);
+
+                    if (user?.email != null) {
+                      Provider.of<UserModel>(context, listen: false)
+                          .setEmailAndType(user?.email ?? "", SocialType.Kakao);
+
+                      await storage.write(
+                          key: "login-kakao", value: user?.email);
+
+                      FirebaseFirestore.instance
+                          .collection("users")
+                          .doc("${user?.email}&kakao")
+                          .set({"matjip": [], "following": [], "review": {}});
+
+                      setState(() {});
+
+                      Get.toNamed("/mainMap",
+                          arguments: {"email": "${user?.email}&kakao"});
+                    } else {
+                      return;
+                    }
+                  },
+                  icon: Image.asset(
+                      "assets/images/kakao_login_medium_narrow.png",
+                      width: 320,
+                      height: 70,
+                      fit: BoxFit.contain)),
+            ),
+            const SizedBox(height: 30),
+            Visibility(
+              visible: Platform.isIOS,
+              child: SizedBox(
+                width: 300,
+                height: 70,
+                child: SignInWithAppleButton(onPressed: () async {
                   user = await SocialLogin()
-                      .socialLogin(socialType: SocialType.Kakao);
+                      .socialLogin(socialType: SocialType.Apple);
 
                   if (user?.email != null) {
                     Provider.of<UserModel>(context, listen: false)
-                        .setEmailAndType(user?.email ?? "", SocialType.Kakao);
+                        .setEmailAndType(user?.email ?? "", SocialType.Apple);
 
-                    await storage.write(key: "login-kakao", value: user?.email);
+                    await storage.write(key: "login-apple", value: user?.email);
 
                     FirebaseFirestore.instance
                         .collection("users")
-                        .doc("${user?.email}&kakao")
+                        .doc("${user?.email}&apple")
                         .set({"matjip": [], "following": [], "review": {}});
 
                     setState(() {});
 
                     Get.toNamed("/mainMap",
-                        arguments: {"email": "${user?.email}&kakao"});
+                        arguments: {"email": "${user?.email}&apple"});
                   } else {
                     return;
                   }
-                },
-                icon: Image.asset("assets/images/kakao_login_medium_narrow.png",
-                    width: 320, height: 70, fit: BoxFit.contain)),
-          ),
-          const SizedBox(height: 30),
-          Visibility(
-            visible: Platform.isIOS,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-              width: 320,
-              height: 70,
-              child: SignInWithAppleButton(onPressed: () async {
-                user = await SocialLogin()
-                    .socialLogin(socialType: SocialType.Apple);
-
-                if (user?.email != null) {
-                  Provider.of<UserModel>(context, listen: false)
-                      .setEmailAndType(user?.email ?? "", SocialType.Apple);
-
-                  await storage.write(key: "login-apple", value: user?.email);
-
-                  FirebaseFirestore.instance
-                      .collection("users")
-                      .doc("${user?.email}&apple")
-                      .set({"matjip": [], "following": [], "review": {}});
-
-                  setState(() {});
-
-                  Get.toNamed("/mainMap",
-                      arguments: {"email": "${user?.email}&apple"});
-                } else {
-                  return;
-                }
-              }),
+                }),
+              ),
             ),
-          ),
-          const SizedBox(height: 30),
-          Container(
-            padding: const EdgeInsets.fromLTRB(30, 0, 0, 0),
-            width: 320,
-            height: 50,
-            child: ElevatedButton(
-                onPressed: () {
-                  Provider.of<UserModel>(context, listen: false)
-                      .setEmailAndType("guest", SocialType.Guest);
-                  Get.toNamed("/mainMap",
-                      arguments: {"email": "guest@guest.com"});
-                },
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(1))),
-                child: const Text("Guest Login")),
-          )
-        ],
+            const SizedBox(height: 30),
+            SizedBox(
+              width: 320,
+              height: 50,
+              child: ElevatedButton(
+                  onPressed: () {
+                    Provider.of<UserModel>(context, listen: false)
+                        .setEmailAndType("guest", SocialType.Guest);
+                    Get.toNamed("/mainMap",
+                        arguments: {"email": "guest@guest.com"});
+                  },
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(1))),
+                  child: const Text("Guest Login")),
+            )
+          ],
+        ),
       ),
     );
   }

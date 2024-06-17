@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
@@ -45,6 +46,7 @@ class _MainMapState extends State<MainMap> {
   List<String> following = [];
   String user_email = "";
   bool isGuest = false;
+  LatLng myLocation = LatLng(0, 0);
 
   @override
   void initState() {
@@ -595,6 +597,52 @@ class _MainMapState extends State<MainMap> {
             ],
           ),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white),
+                  child: IconButton(
+                      onPressed: () async {
+                        bool serviceEnabled =
+                            await Geolocator.isLocationServiceEnabled();
+                        if (!serviceEnabled) {
+                          return Future.error(
+                              'Location services are disabled.');
+                        } else {
+                          LocationPermission permission =
+                              await Geolocator.checkPermission();
+                          if (permission == LocationPermission.denied) {
+                            permission = await Geolocator.requestPermission();
+                            if (permission == LocationPermission.denied) {
+                              return Future.error('permissions are denied');
+                            }
+                          } else {
+                            Position position =
+                                await Geolocator.getCurrentPosition();
+
+                            setState(() {
+                              myLocation =
+                                  LatLng(position.latitude, position.longitude);
+                              mapController.setCenter(myLocation);
+                            });
+                          }
+                        }
+                      },
+                      icon: const Icon(Icons.my_location_rounded)),
+                ),
+                const SizedBox(
+                  height: 240,
+                )
+              ],
+            ),
+          ],
+        )
       ]),
     );
   }

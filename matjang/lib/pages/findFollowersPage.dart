@@ -61,7 +61,8 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
             if (keys.isNotEmpty) {
               return ListTile(
                   leading: const Icon(Icons.people),
-                  title: Text(keys[index].split("@")[0]),
+                  title: Text(
+                      "${keys[index].split("@")[0]} from ${keys[index].split("&").last}"),
                   subtitle: Text(
                       "${widget.allUserMatjipList?[keys[index]]?.length} 개 후기"),
                   trailing: Wrap(

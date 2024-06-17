@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+
+import '../model/usermodel.dart';
 
 class UserOwnDetailPage extends StatefulWidget {
   UserOwnDetailPage({super.key, this.review, this.following});
@@ -65,7 +68,34 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                         );
                       });
                 },
-                icon: const Icon(Icons.notification_important))
+                icon: const Icon(Icons.notification_important)),
+            IconButton(
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("탈퇴하기"),
+                          content: const Text("정말 탈퇴하시겠습니까?"),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  Provider.of<UserModel>(context, listen: false)
+                                      .withDrawerAccount();
+                                  Get.back();
+                                },
+                                child: const Text("취소")),
+                            ElevatedButton(
+                              onPressed: () {
+                                Get.offAllNamed("/login");
+                              },
+                              child: const Text("예"),
+                            )
+                          ],
+                        );
+                      });
+                },
+                icon: const Icon(Icons.person_off))
           ]),
       body: SingleChildScrollView(
         child: Container(
