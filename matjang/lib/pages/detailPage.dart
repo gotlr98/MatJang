@@ -81,7 +81,12 @@ class DetailPage extends StatelessWidget {
                               const SizedBox(
                                 height: 10,
                               ),
-                              TextField(controller: reviewField),
+                              TextField(
+                                controller: reviewField,
+                                decoration: const InputDecoration(
+                                    hintText:
+                                        "부적절하거나 불쾌감을 줄 수 있는 컨텐츠를 게시할 경우 제재를 받을 수 있습니다."),
+                              ),
                               const SizedBox(
                                 height: 30,
                               ),

@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => UserModel(type: SocialType.Guest),
       child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
         home: const InitLodingPage(),
         initialRoute: '/',
         getPages: [
