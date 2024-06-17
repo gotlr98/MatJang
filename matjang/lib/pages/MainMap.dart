@@ -34,7 +34,7 @@ class _MainMapState extends State<MainMap> {
   String textContent = "";
   List<MatJip> matjipList = [];
   Set<Marker> markers = {};
-  LatLng center = LatLng(37.4826364, 126.501144);
+  LatLng center = LatLng(37.572389, 126.9769117);
   var result = [];
   List<MatJip> temp = [];
   List<MatJip> myMatjipList = [];
@@ -234,7 +234,7 @@ class _MainMapState extends State<MainMap> {
       },
       appBar: AppBar(
         title: const Text(
-          "맛장",
+          "맛짱",
           style: TextStyle(letterSpacing: 3.0, fontSize: 18),
         ),
         actions: [
