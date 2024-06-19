@@ -47,12 +47,12 @@ class _LoginState extends State<Login> {
     if (loginKakao != null) {
       // var result = await FirebaseFirestore.instance.collection("users").doc(login).get();
       Provider.of<UserModel>(context, listen: false)
-          .setEmailAndType(loginKakao, SocialType.Kakao);
+          .setEmailAndType("$loginKakao&kakao", SocialType.Kakao);
 
       Get.toNamed("/mainMap", arguments: {"email": "$loginKakao&kakao"});
     } else if (loginApple != null) {
       Provider.of<UserModel>(context, listen: false)
-          .setEmailAndType(loginApple, SocialType.Apple);
+          .setEmailAndType("$loginApple&kakao", SocialType.Apple);
 
       Get.toNamed("/mainMap", arguments: {"email": "$loginApple&apple"});
     }
@@ -61,6 +61,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(scaffoldBackgroundColor: Colors.limeAccent[100]),
       home: Scaffold(
         body: Column(
@@ -90,7 +91,8 @@ class _LoginState extends State<Login> {
 
                     if (user?.email != null) {
                       Provider.of<UserModel>(context, listen: false)
-                          .setEmailAndType(user?.email ?? "", SocialType.Kakao);
+                          .setEmailAndType(
+                              "${user?.email}&kakao" ?? "", SocialType.Kakao);
 
                       await storage.write(
                           key: "login-kakao", value: user?.email);
@@ -98,7 +100,12 @@ class _LoginState extends State<Login> {
                       FirebaseFirestore.instance
                           .collection("users")
                           .doc("${user?.email}&kakao")
-                          .set({"matjip": [], "following": [], "review": {}});
+                          .set({
+                        "matjip": [],
+                        "following": [],
+                        "review": {},
+                        "block": []
+                      });
 
                       setState(() {});
 
@@ -126,14 +133,20 @@ class _LoginState extends State<Login> {
 
                   if (user?.email != null) {
                     Provider.of<UserModel>(context, listen: false)
-                        .setEmailAndType(user?.email ?? "", SocialType.Apple);
+                        .setEmailAndType(
+                            "${user?.email}&apple" ?? "", SocialType.Apple);
 
                     await storage.write(key: "login-apple", value: user?.email);
 
                     FirebaseFirestore.instance
                         .collection("users")
                         .doc("${user?.email}&apple")
-                        .set({"matjip": [], "following": [], "review": {}});
+                        .set({
+                      "matjip": [],
+                      "following": [],
+                      "review": {},
+                      "block": []
+                    });
 
                     setState(() {});
 

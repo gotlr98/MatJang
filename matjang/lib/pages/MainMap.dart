@@ -388,7 +388,7 @@ class _MainMapState extends State<MainMap> {
             await mapController.getCenter();
             setState(() {});
           }),
-          onMarkerTap: (markerId, latLng, zoomLevel) {
+          onMarkerTap: (markerId, latLng, zoomLevel) async {
             String? address;
             String? placeName;
             String? categoryName;
@@ -399,6 +399,7 @@ class _MainMapState extends State<MainMap> {
             Marker marker = Marker(
                 markerId: "0",
                 latLng: LatLng(latLng.latitude, latLng.longitude));
+            Map<String, Map<String, double>> matjipReview = {};
 
             // matjipList =
             //     Provider.of<UserModel>(context, listen: false).matjipList;
@@ -416,6 +417,23 @@ class _MainMapState extends State<MainMap> {
                 categoryName = i.category?.split(">").last;
                 x = i.x;
                 y = i.y;
+              }
+            }
+
+            var temp =
+                await FirebaseFirestore.instance.collection("matjips").get();
+            var matjipReviewGet = temp.docs;
+
+            for (var i in matjipReviewGet) {
+              if (i.id == "$placeName&$address") {
+                for (var j in i.data().keys) {
+                  if (j != user_email &&
+                      !Provider.of<UserModel>(context, listen: false)
+                          .block_list
+                          .contains(j)) {
+                    matjipReview[j] = Map<String, double>.from(i.data()[j]);
+                  }
+                }
               }
             }
 
@@ -448,6 +466,7 @@ class _MainMapState extends State<MainMap> {
                             isReviewed: isReviewed,
                             category: categoryName,
                             review: const {},
+                            matjipReview: matjipReview,
                             isGuest: isGuest),
                         transition: Transition.circularReveal);
                   } else {
@@ -461,6 +480,7 @@ class _MainMapState extends State<MainMap> {
                               isReviewed: isReviewed,
                               category: categoryName,
                               review: reviews,
+                              matjipReview: matjipReview,
                               isGuest: isGuest),
                           transition: Transition.cupertino);
                     }

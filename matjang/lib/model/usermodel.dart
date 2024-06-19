@@ -17,6 +17,8 @@ class UserModel with ChangeNotifier {
   List<String> get _following => following;
   List<String> follower = [];
   List<String> get _follower => follower;
+  List<String> block_list = [];
+  List<String> get _bolck_list => block_list;
 
   UserModel({
     this.email,
@@ -71,6 +73,10 @@ class UserModel with ChangeNotifier {
     matjipList = [];
     review = {};
     type = SocialType.Guest;
+  }
+
+  void addBlockList(String block) {
+    block_list.add(block);
   }
 
   String getSocialType() {

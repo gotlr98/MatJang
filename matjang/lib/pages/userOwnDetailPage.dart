@@ -146,6 +146,14 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
               const SizedBox(height: 15),
               for (var i in widget.following ?? [])
                 Text("${i.split("@")[0]}님 from ${i.split("&").last}"),
+              const SizedBox(
+                height: 50,
+              ),
+              const Text("차단 리스트", style: TextStyle(fontSize: 25)),
+              const SizedBox(height: 15),
+              for (var i
+                  in Provider.of<UserModel>(context, listen: false).block_list)
+                Text("${i.split("@")[0]} from ${i.split("&").last}")
             ],
           ),
         ),
