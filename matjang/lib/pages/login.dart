@@ -101,7 +101,7 @@ class _LoginState extends State<Login> {
                           .collection("users")
                           .doc("${user?.email}&kakao")
                           .set({
-                        "matjip": [],
+                        "matjip": {},
                         "following": [],
                         "review": {},
                         "block": []
@@ -142,7 +142,7 @@ class _LoginState extends State<Login> {
                         .collection("users")
                         .doc("${user?.email}&apple")
                         .set({
-                      "matjip": [],
+                      "matjip": {},
                       "following": [],
                       "review": {},
                       "block": []

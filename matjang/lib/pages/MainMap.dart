@@ -61,9 +61,27 @@ class _MainMapState extends State<MainMap> {
       _getUsersFollowing(Get.arguments["email"]);
       _getUsersMatjip();
       _getUserMatjipsReview();
+      _getUserBlockList();
 
       setState(() {});
     });
+  }
+
+  _getUserBlockList() async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
+
+    var result = snap.docs;
+    List<String> block = [];
+    for (var i in result) {
+      if (i.id == user_email) {
+        var getBlockList = List<String>.from(i.data()["block"]);
+        for (var j in getBlockList) {
+          block.add(j);
+        }
+      }
+      Provider.of<UserModel>(context, listen: false)
+          .getBlockListFromFirebase(block);
+    }
   }
 
   _getUsersFollowing(String email) async {
@@ -121,7 +139,10 @@ class _MainMapState extends State<MainMap> {
     for (var i in result) {
       if (i.id != user_email &&
           i.data()["matjip"] != null &&
-          !following.contains(i.id)) {
+          !following.contains(i.id) &&
+          !Provider.of<UserModel>(context, listen: false)
+              .block_list
+              .contains(i.id)) {
         var getMatjip = i.data()["matjip"];
 
         if (getMatjip != null) {

@@ -142,6 +142,26 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                 ]
               ],
               const SizedBox(height: 50),
+              const Text(
+                "내 맛집",
+                style: TextStyle(fontSize: 25),
+              ),
+              const SizedBox(height: 15),
+              //   DropdownButton(value: selectedValue,
+              // items: selectList.map(
+              //   (value) {
+              //     return DropdownMenuItem(
+              //       value: value,
+              //       child: Text(value),
+              //     );
+              //   },
+              // ).toList(),
+              // onChanged: (value) {
+              //   setState(() {
+              //     selectedValue = value ?? "";
+
+              //   });
+              // },),
               const Text("팔로잉", style: TextStyle(fontSize: 25)),
               const SizedBox(height: 15),
               for (var i in widget.following ?? [])

@@ -79,6 +79,10 @@ class UserModel with ChangeNotifier {
     block_list.add(block);
   }
 
+  void getBlockListFromFirebase(List<String> block) {
+    block_list = block;
+  }
+
   String getSocialType() {
     switch (type) {
       case SocialType.Apple:

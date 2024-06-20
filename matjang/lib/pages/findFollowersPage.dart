@@ -28,10 +28,10 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
     if (isEnabled[index]) {
       var following = Provider.of<UserModel>(context, listen: false).following;
       following.add(email);
+      print("${Provider.of<UserModel>(context, listen: false).email}");
       await FirebaseFirestore.instance
           .collection("users")
-          .doc(
-              "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
+          .doc("${Provider.of<UserModel>(context, listen: false).email}")
           .update({"following": following});
       Provider.of<UserModel>(context, listen: false).addFollowing(email);
       isEnabled[index] = false;
