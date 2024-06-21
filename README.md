@@ -18,6 +18,10 @@
 ------------------------
 * 메인화면
 
+<p align="center">  
+   <img src="https://github.com/gotlr98/OTTDiary/assets/71820857/67b62533-f86c-49c4-8aaa-403337828137" align="center" width="33%">
+   <img src="https://github.com/gotlr98/OTTDiary/assets/71820857/268415e8-54e9-4b36-8fdc-bfc4fbd054bc" align="center" width="33%">
+</p>
 
 
 
