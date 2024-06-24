@@ -335,7 +335,6 @@ class _MainMapState extends State<MainMap> {
                       onPressed: () {
                         mapLevel = 6;
                         markers.clear();
-
                         for (var i in myMatjipList) {
                           markers.add(Marker(
                               markerId: UniqueKey().toString(),
@@ -369,7 +368,6 @@ class _MainMapState extends State<MainMap> {
                       var count = 0;
                       matjipList = [];
                       markers.clear();
-
                       matjipList.add(myMatjipList[i]);
                       markers.add(Marker(
                         markerId: UniqueKey().toString(),
@@ -383,11 +381,11 @@ class _MainMapState extends State<MainMap> {
                       }
 
                       mapController.setCenter(center);
+                      setState(() {});
 
                       if (scaffoldKey.currentState!.isDrawerOpen) {
                         scaffoldKey.currentState!.closeDrawer();
                       }
-                      setState(() {});
                     },
                   );
                 },

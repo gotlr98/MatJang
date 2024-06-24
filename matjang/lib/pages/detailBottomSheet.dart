@@ -80,82 +80,82 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                   visible: !widget.isGuest,
                   child: IconButton(
                       onPressed: () async {
-                        // Get.dialog(AlertDialog(
-                        //   title: const Text("맛집 등록하기"),
-                        //   content: const Text("맛집에 등록하시겠습니까?"),
-                        //   actions: [
-                        //     TextButton(
-                        //         onPressed: () async {
-                        //           var getList = Provider.of<UserModel>(context,
-                        //                   listen: false)
-                        //               .matjipList;
-                        //           for (var i in getList) {
-                        //             if (i.place_name == widget.place_name &&
-                        //                 i.address == widget.address) {
-                        //               Get.back();
-                        //               Get.snackbar("중복", "이미 등록된 맛집입니다",
-                        //                   duration: const Duration(seconds: 2));
-                        //               return;
-                        //             }
-                        //           }
-                        //           Provider.of<UserModel>(context, listen: false)
-                        //               .addList(MatJip(
-                        //                   place_name: widget.place_name,
-                        //                   x: widget.x,
-                        //                   y: widget.y,
-                        //                   address: widget.address,
-                        //                   category: widget.category));
+                        Get.dialog(AlertDialog(
+                          title: const Text("맛집 등록하기"),
+                          content: const Text("맛집에 등록하시겠습니까?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () async {
+                                  var getList = Provider.of<UserModel>(context,
+                                          listen: false)
+                                      .matjipList;
+                                  for (var i in getList) {
+                                    if (i.place_name == widget.place_name &&
+                                        i.address == widget.address) {
+                                      Get.back();
+                                      Get.snackbar("중복", "이미 등록된 맛집입니다",
+                                          duration: const Duration(seconds: 2));
+                                      return;
+                                    }
+                                  }
+                                  Provider.of<UserModel>(context, listen: false)
+                                      .addList(MatJip(
+                                          place_name: widget.place_name,
+                                          x: widget.x,
+                                          y: widget.y,
+                                          address: widget.address,
+                                          category: widget.category));
 
-                        //           var result = Provider.of<UserModel>(context,
-                        //                   listen: false)
-                        //               .matjipList;
-                        //           var li = [];
-                        //           for (var i in result) {
-                        //             li.add(MatJip().toJson(i));
-                        //           }
+                                  var result = Provider.of<UserModel>(context,
+                                          listen: false)
+                                      .matjipList;
+                                  var li = [];
+                                  for (var i in result) {
+                                    li.add(MatJip().toJson(i));
+                                  }
 
-                        //           await FirebaseFirestore.instance
-                        //               .collection("users")
-                        //               .doc(
-                        //                   "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
-                        //               .update({"matjip": li});
-                        //           Get.back();
+                                  await FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(
+                                          "${Provider.of<UserModel>(context, listen: false).email}")
+                                      .update({"matjip": li});
+                                  Get.back();
 
-                        //           Get.snackbar("Success", "등록완료");
+                                  Get.snackbar("Success", "등록완료");
 
-                        //           setState(() {
-                        //             widget.isRegister = true;
-                        //           });
-                        //         },
-                        //         child: const Text("등록하기")),
-                        //     TextButton(
-                        //         onPressed: () {
-                        //           Get.back();
-                        //         },
-                        //         child: const Text("취소하기"))
-                        //   ],
-                        // ));
-                        var snap = await FirebaseFirestore.instance
-                            .collection("users")
-                            .get();
-                        var result = snap.docs;
-                        Map<String, List<String>> bookmark = {};
-                        for (var i in result) {
-                          if (i.id ==
-                              Provider.of<UserModel>(context, listen: false)
-                                  .email) {
-                            var temp = Map<String, List<String>>.from(
-                                i.data()["matjip"]);
-                            if (temp.isNotEmpty) {
-                              for (var j in temp.keys) {
-                                bookmark[j] = temp[j] ?? [];
-                              }
-                            }
-                          }
-                        }
-                        Get.bottomSheet(BookmarkBottomsheet(
-                          bookmark: bookmark,
+                                  setState(() {
+                                    widget.isRegister = true;
+                                  });
+                                },
+                                child: const Text("등록하기")),
+                            TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: const Text("취소하기"))
+                          ],
                         ));
+                        // var snap = await FirebaseFirestore.instance
+                        //     .collection("users")
+                        //     .get();
+                        // var result = snap.docs;
+                        // Map<String, List<String>> bookmark = {};
+                        // for (var i in result) {
+                        //   if (i.id ==
+                        //       Provider.of<UserModel>(context, listen: false)
+                        //           .email) {
+                        //     var temp = Map<String, Map<String,String>>.from(
+                        //         i.data()["matjip"]);
+                        //     if (temp.isNotEmpty) {
+                        //       for (var j in temp.keys) {
+                        //         bookmark[j] = temp[j] ?? [];
+                        //       }
+                        //     }
+                        //   }
+                        // }
+                        // Get.bottomSheet(BookmarkBottomsheet(
+                        //   bookmark: bookmark,
+                        // ));
                       },
                       icon: widget.isRegister
                           ? const Icon(Icons.check)

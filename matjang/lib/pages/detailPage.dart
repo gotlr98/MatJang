@@ -133,12 +133,12 @@ class DetailPage extends StatelessWidget {
                                               listen: false)
                                           .review;
 
-                                      var email =
-                                          "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}";
+                                      // var email =
+                                      //     "${Provider.of<UserModel>(context, listen: false).email}";
                                       await FirebaseFirestore.instance
                                           .collection("users")
                                           .doc(
-                                              "${Provider.of<UserModel>(context, listen: false).email}&${Provider.of<UserModel>(context, listen: false).getSocialType()}")
+                                              "${Provider.of<UserModel>(context, listen: false).email}")
                                           .update({"review": li});
 
                                       // var test = await FirebaseFirestore.instance
@@ -149,9 +149,8 @@ class DetailPage extends StatelessWidget {
                                           .collection("matjips")
                                           .doc("$place_name&$address")
                                           .set({
-                                        email ?? "": {
-                                          reviewField.text: rating_
-                                        },
+                                        "${Provider.of<UserModel>(context, listen: false).email}":
+                                            {reviewField.text: rating_},
                                       }, SetOptions(merge: true));
                                       isUpdate = true;
 
