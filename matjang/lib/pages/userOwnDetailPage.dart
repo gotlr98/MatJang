@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -79,9 +80,15 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                           content: const Text("정말 탈퇴하시겠습니까?"),
                           actions: [
                             ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   Provider.of<UserModel>(context, listen: false)
                                       .withDrawerAccount();
+                                  await FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(Provider.of<UserModel>(context,
+                                              listen: false)
+                                          .email)
+                                      .delete();
                                   Get.back();
                                 },
                                 child: const Text("취소")),

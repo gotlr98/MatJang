@@ -63,8 +63,9 @@ class _MainMapState extends State<MainMap> {
       _getUserMatjipsReview();
       _getUserBlockList();
 
-      setState(() {});
+      // setState(() {});
     });
+    setState(() {});
   }
 
   _getUserBlockList() async {
@@ -247,9 +248,6 @@ class _MainMapState extends State<MainMap> {
         setState(() {
           if (isOpened == true) {
             _getUsersMatjip();
-          } else {
-            matjipList = [];
-            markers.clear();
           }
         });
       },
@@ -299,8 +297,8 @@ class _MainMapState extends State<MainMap> {
                 // onDetailsPressed: () {},
                 currentAccountPicture: InkWell(
                     onTap: () async {
-                      _getUserMatjipsReview();
-                      _getUsersFollowing(user_email);
+                      await _getUserMatjipsReview();
+                      await _getUsersFollowing(user_email);
                       Get.to(() => UserOwnDetailPage(
                             review: get_matjip_review,
                             following: following,

@@ -31,6 +31,7 @@ Future<void> main() async {
       javaScriptAppKey: dotenv.env["JAVA_APP_KEY"]);
   AuthRepository.initialize(
       appKey: dotenv.env["APP_KEY"]!, baseUrl: dotenv.env["BASE_URL"]!);
+
   runApp(
     const MyApp(),
   );
