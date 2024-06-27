@@ -421,6 +421,9 @@ class _MainMapState extends State<MainMap> {
             // matjipList =
             //     Provider.of<UserModel>(context, listen: false).matjipList;
             for (var i in markers) {
+              if (i.markerId == "currentMarker") {
+                return;
+              }
               if (markerId == i.markerId) {
                 marker = i;
               }
@@ -516,7 +519,11 @@ class _MainMapState extends State<MainMap> {
                   ),
                 ),
               ));
-            } else {
+            }
+            // else if(){
+
+            // }
+            else {
               Get.dialog(
                 AlertDialog(
                   title: const Text('Error'),
@@ -666,6 +673,14 @@ class _MainMapState extends State<MainMap> {
                             setState(() {
                               myLocation =
                                   LatLng(position.latitude, position.longitude);
+
+                              markers.add(Marker(
+                                  markerId: "currentMarker",
+                                  latLng: LatLng(
+                                      position.latitude, position.longitude),
+                                  markerImageSrc:
+                                      "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbB7t3J%2Fbtr0KRodrrM%2FBB4jmkjt9eYbdiKAySATnK%2Fimg.png"));
+
                               mapController.setCenter(myLocation);
                             });
                           }

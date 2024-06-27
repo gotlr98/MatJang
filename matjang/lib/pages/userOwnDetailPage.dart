@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,11 @@ class UserOwnDetailPage extends StatefulWidget {
 }
 
 class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
+  static const storage = FlutterSecureStorage(
+      iOptions: IOSOptions(
+    synchronizable: false,
+    accessibility: KeychainAccessibility.first_unlock,
+  ));
   @override
   void initState() {
     super.initState();
@@ -26,6 +32,7 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
   Widget build(BuildContext context) {
     double rating_ = 1.0;
     TextEditingController textController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
           title: const Text(
@@ -80,20 +87,24 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                           content: const Text("정말 탈퇴하시겠습니까?"),
                           actions: [
                             ElevatedButton(
-                                onPressed: () async {
-                                  Provider.of<UserModel>(context, listen: false)
-                                      .withDrawerAccount();
-                                  await FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(Provider.of<UserModel>(context,
-                                              listen: false)
-                                          .email)
-                                      .delete();
+                                onPressed: () {
                                   Get.back();
                                 },
                                 child: const Text("취소")),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .email)
+                                    .delete();
+                                await storage.delete(
+                                    key:
+                                        "login-${Provider.of<UserModel>(context, listen: false).getSocialType()}");
+                                Provider.of<UserModel>(context, listen: false)
+                                    .withDrawerAccount();
+
                                 Get.offAllNamed("/login");
                               },
                               child: const Text("예"),
