@@ -58,9 +58,10 @@ class _MainMapState extends State<MainMap> {
           "guest") {
         isGuest = true;
       }
+      print(user_email);
       _getUsersFollowing(Get.arguments["email"]);
-      _getUsersMatjip();
-      _getUserMatjipsReview();
+      // _getUsersMatjip();
+      // _getUserMatjipsReview();
       _getUserBlockList();
 
       // setState(() {});

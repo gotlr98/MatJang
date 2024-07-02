@@ -52,7 +52,7 @@ class _LoginState extends State<Login> {
       Get.toNamed("/mainMap", arguments: {"email": "$loginKakao&kakao"});
     } else if (loginApple != null) {
       Provider.of<UserModel>(context, listen: false)
-          .setEmailAndType("$loginApple&kakao", SocialType.Apple);
+          .setEmailAndType("$loginApple&apple", SocialType.Apple);
 
       Get.toNamed("/mainMap", arguments: {"email": "$loginApple&apple"});
     }
@@ -100,12 +100,7 @@ class _LoginState extends State<Login> {
                       FirebaseFirestore.instance
                           .collection("users")
                           .doc("${user?.email}&kakao")
-                          .set({
-                        "matjip": [],
-                        "following": [],
-                        "review": {},
-                        "block": []
-                      });
+                          .set({"following": [], "review": {}, "block": []});
 
                       setState(() {});
 
@@ -141,12 +136,7 @@ class _LoginState extends State<Login> {
                     FirebaseFirestore.instance
                         .collection("users")
                         .doc("${user?.email}&apple")
-                        .set({
-                      "matjip": [],
-                      "following": [],
-                      "review": {},
-                      "block": []
-                    });
+                        .set({"following": [], "review": {}, "block": []});
 
                     setState(() {});
 

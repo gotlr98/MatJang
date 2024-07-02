@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:matjang/pages/registerBookmark.dart';
 import 'package:provider/provider.dart';
 
+import '../model/matjip.dart';
 import '../model/usermodel.dart';
 
 class BookmarkBottomsheet extends StatefulWidget {
@@ -13,7 +14,7 @@ class BookmarkBottomsheet extends StatefulWidget {
   @override
   State<BookmarkBottomsheet> createState() => _BookmarkBottomsheetState();
 
-  Map<String, List<String>>? bookmark;
+  List<Map<String, List<MatJip>>>? bookmark;
 }
 
 class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
@@ -23,13 +24,14 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
         body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        for (var i in widget.bookmark?.keys ?? {"", ""}) ...[
-          ListTile(
-            title: Text(i),
-            subtitle:
-                Text("${widget.bookmark?[i]?.length.toString()}개" ?? "null"),
-          ),
-        ],
+        for (int i = 0; i < (widget.bookmark?.length ?? 0); i++)
+          for (var j in widget.bookmark?[i].keys ?? {"", ""}) ...[
+            ListTile(
+              title: Text(j),
+              subtitle:
+                  Text("${widget.bookmark?[i].length.toString()}개" ?? "null"),
+            ),
+          ],
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -41,13 +43,17 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
                       Get.bottomSheet(SizedBox(
                               height: (MediaQuery.of(context).size.height) / 3,
                               child: const RegisterBookMark()))
-                          .then((value) => setState(() async {
+                          .then((value) => () async {
                                 var snap = await FirebaseFirestore.instance
                                     .collection("users")
+                                    .doc(Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .email)
+                                    .collection("bookmark")
                                     .get();
                                 var result = snap.docs;
 
-                                Map<String, List<String>> conv = {};
+                                Map<String, List<MatJip>> conv = {};
                                 for (var i in result) {
                                   if (i.id ==
                                       Provider.of<UserModel>(context,
@@ -59,8 +65,9 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
                                     }
                                   }
                                 }
-                                widget.bookmark = conv;
-                              }));
+                                // widget.bookmark = conv;
+                                setState(() {});
+                              });
                     },
                     child: const Text("새로 추가하기")),
               ],
