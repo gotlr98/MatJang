@@ -138,7 +138,11 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                         var email =
                             Provider.of<UserModel>(context, listen: false)
                                 .email;
-                        print(email);
+                        // print(widget.place_name);
+                        // print(widget.x);
+                        // print(widget.y);
+                        // print(widget.address);
+                        // print(widget.category);
                         var snap = await FirebaseFirestore.instance
                             .collection("users")
                             .doc(email)
@@ -146,13 +150,17 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                             .doc("bookmark")
                             .get();
                         var result = snap.data();
-
+                        List<MatJip> temp = [];
                         List<Map<String, List<MatJip>>> bookmark = [{}];
                         var count = 0;
                         for (var i in result?.keys ?? {"", ""}) {
-                          // bookmark[i] = List<MatJip>.from(result?[i]);
-                          bookmark[count][i] = List<MatJip>.from(result?[i]);
-                          count += 1;
+                          // print(result?[i][count]);
+
+                          for (var j = 0; j < result?[i].length; j++) {
+                            temp.add(MatJip.fromJson(result?[i][j]));
+                          }
+                          bookmark[count][i] = temp;
+                          temp = [];
                         }
 
                         // for (var i in result) {

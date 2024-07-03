@@ -28,8 +28,8 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
           for (var j in widget.bookmark?[i].keys ?? {"", ""}) ...[
             ListTile(
               title: Text(j),
-              subtitle:
-                  Text("${widget.bookmark?[i].length.toString()}개" ?? "null"),
+              subtitle: Text(
+                  "${widget.bookmark?[i][j]?.length.toString()}개" ?? "null"),
             ),
           ],
         Row(
