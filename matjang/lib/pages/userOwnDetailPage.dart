@@ -164,7 +164,7 @@ class _UserOwnDetailPageState extends State<UserOwnDetailPage> {
                 "내 맛집",
                 style: TextStyle(fontSize: 25),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 50),
               //   DropdownButton(value: selectedValue,
               // items: selectList.map(
               //   (value) {

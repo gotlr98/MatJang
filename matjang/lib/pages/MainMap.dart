@@ -24,6 +24,23 @@ class MainMap extends StatefulWidget {
   State<MainMap> createState() => _MainMapState();
 }
 
+class viewModel with ChangeNotifier {
+  bool _disposed = false;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
+  }
+}
+
 class _MainMapState extends State<MainMap> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late KakaoMapController mapController;
@@ -333,43 +350,48 @@ class _MainMapState extends State<MainMap> {
                       icon: const Icon(Icons.map))
                 ],
               ),
-              // ListView.builder(
-              //   shrinkWrap: true,
-              //   itemCount: myMatjipList.length,
-              //   padding: EdgeInsets.zero,
-              //   itemBuilder: (context, i) {
-              //     return ListTile(
-              //       title: Text(
-              //         myMatjipList[i].place_name ?? "",
-              //         style: const TextStyle(fontSize: 15),
-              //       ),
-              //       leading: const Icon(Icons.food_bank),
-              //       onTap: () {
-              //         var count = 0;
-              //         matjipList = [];
-              //         markers.clear();
-              //         matjipList.add(myMatjipList[i]);
-              //         markers.add(Marker(
-              //           markerId: UniqueKey().toString(),
-              //           latLng: LatLng(double.parse(myMatjipList[i].y ?? ""),
-              //               double.parse(myMatjipList[i].x ?? "")),
-              //         ));
-              //         if (count == 0) {
-              //           center = LatLng(double.parse(myMatjipList[i].y ?? ""),
-              //               double.parse(myMatjipList[i].x ?? ""));
-              //           count += 1;
-              //         }
+              SingleChildScrollView(
+                child: Column(children: [
+                  for (var i in myMatjipList.keys) ...[
+                    ExpansionTile(
+                      title: Text(i),
+                      children: [
+                        for (var j in myMatjipList[i] ?? []) ...[
+                          ListTile(
+                            title: Text(
+                              j.place_name,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            onTap: () {
+                              var count = 0;
+                              matjipList = [];
+                              markers.clear();
+                              matjipList.add(j);
+                              markers.add(Marker(
+                                markerId: UniqueKey().toString(),
+                                latLng: LatLng(double.parse(j.y ?? ""),
+                                    double.parse(j.x ?? "")),
+                              ));
+                              if (count == 0) {
+                                center = LatLng(double.parse(j.y ?? ""),
+                                    double.parse(j.x ?? ""));
+                                count += 1;
+                              }
 
-              //         mapController.setCenter(center);
-              //         setState(() {});
+                              mapController.setCenter(center);
+                              setState(() {});
 
-              //         if (scaffoldKey.currentState!.isDrawerOpen) {
-              //           scaffoldKey.currentState!.closeDrawer();
-              //         }
-              //       },
-              //     );
-              //   },
-              // ),
+                              if (scaffoldKey.currentState!.isDrawerOpen) {
+                                scaffoldKey.currentState!.closeDrawer();
+                              }
+                            },
+                          )
+                        ]
+                      ],
+                    ),
+                  ],
+                ]),
+              )
             ],
           ),
         ),
