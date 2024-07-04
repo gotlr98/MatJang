@@ -359,9 +359,10 @@ class _MainMapState extends State<MainMap> {
                         for (var j in myMatjipList[i] ?? []) ...[
                           ListTile(
                             title: Text(
-                              j.place_name,
+                              j.place_name ?? "",
                               style: const TextStyle(fontSize: 12),
                             ),
+                            leading: const Icon(Icons.food_bank),
                             onTap: () {
                               var count = 0;
                               matjipList = [];

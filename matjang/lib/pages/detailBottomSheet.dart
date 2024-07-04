@@ -155,12 +155,14 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                         List<MatJip> temp = [];
                         Map<String, List<MatJip>> bookmark = {};
 
-                        for (var i in result?.keys ?? {"", ""}) {
-                          for (var j = 0; j < result?[i].length; j++) {
-                            temp.add(MatJip.fromJson(result?[i][j]));
+                        if (result?.isNotEmpty ?? false) {
+                          for (var i in result?.keys ?? {"", ""}) {
+                            for (var j = 0; j < result?[i].length; j++) {
+                              temp.add(MatJip.fromJson(result?[i][j]));
+                            }
+                            bookmark[i] = temp;
+                            temp = [];
                           }
-                          bookmark[i] = temp;
-                          temp = [];
                         }
 
                         // for (var i in result) {

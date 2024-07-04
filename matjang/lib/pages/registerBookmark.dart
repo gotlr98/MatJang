@@ -7,10 +7,12 @@ import 'package:provider/provider.dart';
 import '../model/usermodel.dart';
 
 class RegisterBookMark extends StatefulWidget {
-  const RegisterBookMark({super.key});
+  RegisterBookMark({super.key, this.bookmarkTitle});
 
   @override
   State<RegisterBookMark> createState() => _RegisterBookMarkState();
+
+  List<String>? bookmarkTitle;
 }
 
 class _RegisterBookMarkState extends State<RegisterBookMark> {
@@ -33,7 +35,11 @@ class _RegisterBookMarkState extends State<RegisterBookMark> {
           ElevatedButton(
             onPressed: () async {
               if (inputController.text.isEmpty) {
-                Get.snackbar("오류", "그룹명을 입력해 주세요");
+                Get.snackbar("error", "그룹명을 입력해 주세요");
+                return;
+              } else if (widget.bookmarkTitle?.contains(inputController.text) ??
+                  false) {
+                Get.snackbar("error", "이미 존재하는 그룹명입니다");
                 return;
               } else {
                 await FirebaseFirestore.instance
@@ -41,9 +47,13 @@ class _RegisterBookMarkState extends State<RegisterBookMark> {
                     .doc(Provider.of<UserModel>(context, listen: false).email!)
                     .collection("matjip")
                     .doc("bookmark")
-                    .set({
-                  inputController.text: [{}]
-                }, SetOptions(merge: true));
+                    .set({inputController.text: []}, SetOptions(merge: true));
+
+                // var snap = await FirebaseFirestore.instance.collection("users").doc(Provider.of<UserModel>(context, listen: false).email!)
+                //     .collection("matjip")
+                //     .doc("bookmark").get();
+
+                // var result = snap.data();
 
                 Get.back();
               }

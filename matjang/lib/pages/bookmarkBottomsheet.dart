@@ -88,35 +88,40 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
                 children: [
                   FilledButton(
                       onPressed: () {
+                        List<String> bookmarkTitle = [];
+                        for (var i in widget.bookmark?.keys ?? {""}) {
+                          bookmarkTitle.add(i);
+                        }
                         Get.bottomSheet(SizedBox(
-                                height:
-                                    (MediaQuery.of(context).size.height) / 3,
-                                child: const RegisterBookMark()))
-                            .then((value) => () async {
-                                  var snap = await FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(Provider.of<UserModel>(context,
-                                              listen: false)
-                                          .email)
-                                      .collection("bookmark")
-                                      .get();
-                                  var result = snap.docs;
+                            height: (MediaQuery.of(context).size.height) / 3,
+                            child: RegisterBookMark(
+                              bookmarkTitle: bookmarkTitle,
+                            ))).then((value) => () async {
+                              var snap = await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(Provider.of<UserModel>(context,
+                                          listen: false)
+                                      .email)
+                                  .collection("matjip")
+                                  .doc("bookmark")
+                                  .get();
+                              var result = snap.data();
 
-                                  Map<String, List<MatJip>> conv = {};
-                                  for (var i in result) {
-                                    if (i.id ==
-                                        Provider.of<UserModel>(context,
-                                                listen: false)
-                                            .email) {
-                                      var temp = i.data()["matjip"];
-                                      for (var j in temp.keys) {
-                                        conv[j] = temp[j];
-                                      }
-                                    }
+                              List<MatJip> temp = [];
+                              Map<String, List<MatJip>> tempbookmark = {};
+
+                              if (result?.isNotEmpty ?? false) {
+                                for (var i in result?.keys ?? {"", ""}) {
+                                  for (var j = 0; j < result?[i].length; j++) {
+                                    temp.add(MatJip.fromJson(result?[i][j]));
                                   }
-                                  // widget.bookmark = conv;
-                                  setState(() {});
-                                });
+                                  widget.bookmark?[i] = temp;
+                                  temp = [];
+                                }
+                              }
+                              // widget.bookmark = conv;
+                              setState(() {});
+                            });
                       },
                       child: const Text("새로 추가하기")),
                 ],
