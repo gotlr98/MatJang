@@ -37,8 +37,8 @@ class _MainMapState extends State<MainMap> {
   LatLng center = LatLng(37.572389, 126.9769117);
   var result = [];
   List<MatJip> temp = [];
-  List<MatJip> myMatjipList = [];
-  Map<String, List<MatJip>> allUserMatjipList = {};
+  Map<String, List<MatJip>> myMatjipList = {};
+  List<String> findAllUser = [];
   int mapLevel = 4;
   Map<String, Map<String, double>> get_matjip_review = {};
   final selectList = ["지도 둘러보기", "맛집 찾기"];
@@ -47,24 +47,22 @@ class _MainMapState extends State<MainMap> {
   String user_email = "";
   bool isGuest = false;
   LatLng myLocation = LatLng(0, 0);
+  List<MatJip> tempConv = [];
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       user_email = Get.arguments["email"];
       if (Provider.of<UserModel>(context, listen: false).getSocialType() ==
           "guest") {
         isGuest = true;
       }
-      print(user_email);
-      _getUsersFollowing(Get.arguments["email"]);
-      // _getUsersMatjip();
-      // _getUserMatjipsReview();
-      _getUserBlockList();
-
-      // setState(() {});
+      await _getUsersFollowing(Get.arguments["email"]);
+      await _getUsersMatjip();
+      await _getUserMatjipsReview();
+      await _getUserBlockList();
     });
     setState(() {});
   }
@@ -105,31 +103,29 @@ class _MainMapState extends State<MainMap> {
   }
 
   _getUsersMatjip() async {
-    var snap = await FirebaseFirestore.instance.collection("users").get();
+    var snap = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user_email)
+        .collection("matjip")
+        .doc("bookmark")
+        .get();
 
-    var result = snap.docs;
-    myMatjipList = [];
-    for (var i in result) {
-      if (i.id == user_email) {
-        var getMatjip = i.data()["matjip"];
+    var result = snap.data();
+    myMatjipList = {};
 
-        if (getMatjip != null) {
-          this.result.add(getMatjip);
-          for (var i in getMatjip) {
-            // matjipList.add(i);
-            myMatjipList.add(MatJip(
-                place_name: i["place_name"],
-                x: i["x"],
-                y: i["y"],
-                address: i["address"],
-                category: i["category"]));
-          }
-          Provider.of<UserModel>(context, listen: false)
-              .getListFromFirebase(myMatjipList);
+    if (result != null) {
+      for (var i in result.keys) {
+        for (var j = 0; j < result[i].length; j++) {
+          var tem = MatJip.fromDatabase(result[i][j]);
+          tempConv.add(tem);
         }
+        myMatjipList[i] = tempConv;
+        tempConv = [];
       }
+      Provider.of<UserModel>(context, listen: false)
+          .getListFromFirebase(myMatjipList);
     }
-    matjipList = myMatjipList;
+    // matjipList = myMatjipList;
   }
 
   _getAllUsersMatjip() async {
@@ -137,29 +133,14 @@ class _MainMapState extends State<MainMap> {
     var snap = await FirebaseFirestore.instance.collection("users").get();
 
     var result = snap.docs;
-    allUserMatjipList = {};
+    findAllUser = [];
     for (var i in result) {
       if (i.id != user_email &&
-          i.data()["matjip"] != null &&
           !following.contains(i.id) &&
           !Provider.of<UserModel>(context, listen: false)
               .block_list
               .contains(i.id)) {
-        var getMatjip = i.data()["matjip"];
-
-        if (getMatjip != null) {
-          // this.result.add(getMatjip);
-          for (var j in getMatjip) {
-            // matjipList.add(i);
-            temp.add(MatJip(
-                place_name: j["place_name"],
-                x: j["x"],
-                y: j["y"],
-                address: j["address"],
-                category: j["category"]));
-          }
-        }
-        allUserMatjipList[i.id] = temp;
+        findAllUser.add(i.id);
         temp = [];
       }
     }
@@ -316,8 +297,7 @@ class _MainMapState extends State<MainMap> {
                         await _getAllUsersMatjip();
 
                         Get.to(() => FindFollowersPage(
-                            allUserMatjipList: allUserMatjipList,
-                            isGuest: isGuest));
+                            findAllUser: findAllUser, isGuest: isGuest));
                       },
                       child: Image.asset("assets/images/followers.png")),
                 ],
@@ -334,13 +314,14 @@ class _MainMapState extends State<MainMap> {
                       onPressed: () {
                         mapLevel = 6;
                         markers.clear();
-                        for (var i in myMatjipList) {
-                          markers.add(Marker(
-                              markerId: UniqueKey().toString(),
-                              latLng: LatLng(double.parse(i.y ?? ""),
-                                  double.parse(i.x ?? ""))));
+                        for (var i in myMatjipList.keys) {
+                          for (var j in myMatjipList[i]!) {
+                            markers.add(Marker(
+                                markerId: UniqueKey().toString(),
+                                latLng: LatLng(double.parse(j.y ?? ""),
+                                    double.parse(j.x ?? ""))));
+                          }
                         }
-
                         if (scaffoldKey.currentState!.isDrawerOpen) {
                           scaffoldKey.currentState!.closeDrawer();
                         }
@@ -352,43 +333,43 @@ class _MainMapState extends State<MainMap> {
                       icon: const Icon(Icons.map))
                 ],
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: myMatjipList.length,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, i) {
-                  return ListTile(
-                    title: Text(
-                      myMatjipList[i].place_name ?? "",
-                      style: const TextStyle(fontSize: 15),
-                    ),
-                    leading: const Icon(Icons.food_bank),
-                    onTap: () {
-                      var count = 0;
-                      matjipList = [];
-                      markers.clear();
-                      matjipList.add(myMatjipList[i]);
-                      markers.add(Marker(
-                        markerId: UniqueKey().toString(),
-                        latLng: LatLng(double.parse(myMatjipList[i].y ?? ""),
-                            double.parse(myMatjipList[i].x ?? "")),
-                      ));
-                      if (count == 0) {
-                        center = LatLng(double.parse(myMatjipList[i].y ?? ""),
-                            double.parse(myMatjipList[i].x ?? ""));
-                        count += 1;
-                      }
+              // ListView.builder(
+              //   shrinkWrap: true,
+              //   itemCount: myMatjipList.length,
+              //   padding: EdgeInsets.zero,
+              //   itemBuilder: (context, i) {
+              //     return ListTile(
+              //       title: Text(
+              //         myMatjipList[i].place_name ?? "",
+              //         style: const TextStyle(fontSize: 15),
+              //       ),
+              //       leading: const Icon(Icons.food_bank),
+              //       onTap: () {
+              //         var count = 0;
+              //         matjipList = [];
+              //         markers.clear();
+              //         matjipList.add(myMatjipList[i]);
+              //         markers.add(Marker(
+              //           markerId: UniqueKey().toString(),
+              //           latLng: LatLng(double.parse(myMatjipList[i].y ?? ""),
+              //               double.parse(myMatjipList[i].x ?? "")),
+              //         ));
+              //         if (count == 0) {
+              //           center = LatLng(double.parse(myMatjipList[i].y ?? ""),
+              //               double.parse(myMatjipList[i].x ?? ""));
+              //           count += 1;
+              //         }
 
-                      mapController.setCenter(center);
-                      setState(() {});
+              //         mapController.setCenter(center);
+              //         setState(() {});
 
-                      if (scaffoldKey.currentState!.isDrawerOpen) {
-                        scaffoldKey.currentState!.closeDrawer();
-                      }
-                    },
-                  );
-                },
-              ),
+              //         if (scaffoldKey.currentState!.isDrawerOpen) {
+              //           scaffoldKey.currentState!.closeDrawer();
+              //         }
+              //       },
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),
@@ -460,9 +441,13 @@ class _MainMapState extends State<MainMap> {
 
             var checkRegister =
                 Provider.of<UserModel>(context, listen: false).matjipList;
-            for (var i in checkRegister) {
-              if (i.address == address) {
-                isRegister = true;
+            Map<String, bool> checkBookmarkRegister = {};
+            for (var i in checkRegister.keys) {
+              for (var j in checkRegister[i] ?? []) {
+                if (j.address == address) {
+                  checkBookmarkRegister[i] = true;
+                  isRegister = true;
+                }
               }
             }
 
@@ -517,6 +502,7 @@ class _MainMapState extends State<MainMap> {
                     y: y,
                     isRegister: isRegister,
                     isGuest: isGuest,
+                    checkBookmarkRegister: checkBookmarkRegister,
                   ),
                 ),
               ));

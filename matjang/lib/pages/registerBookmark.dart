@@ -39,8 +39,10 @@ class _RegisterBookMarkState extends State<RegisterBookMark> {
                 await FirebaseFirestore.instance
                     .collection("users")
                     .doc(Provider.of<UserModel>(context, listen: false).email!)
+                    .collection("matjip")
+                    .doc("bookmark")
                     .set({
-                  "matjip": {inputController.text: {}}
+                  inputController.text: [{}]
                 }, SetOptions(merge: true));
 
                 Get.back();

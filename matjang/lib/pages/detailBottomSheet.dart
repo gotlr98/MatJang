@@ -17,6 +17,7 @@ class DetailBottomSheet extends StatefulWidget {
       this.x,
       this.y,
       this.isRegister = false,
+      this.checkBookmarkRegister,
       this.isGuest = false});
   String? place_name;
   String? address;
@@ -24,6 +25,7 @@ class DetailBottomSheet extends StatefulWidget {
   String? x;
   String? y;
   bool isRegister;
+  Map<String, bool>? checkBookmarkRegister;
   bool isGuest;
 
   @override
@@ -151,15 +153,13 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                             .get();
                         var result = snap.data();
                         List<MatJip> temp = [];
-                        List<Map<String, List<MatJip>>> bookmark = [{}];
-                        var count = 0;
-                        for (var i in result?.keys ?? {"", ""}) {
-                          // print(result?[i][count]);
+                        Map<String, List<MatJip>> bookmark = {};
 
+                        for (var i in result?.keys ?? {"", ""}) {
                           for (var j = 0; j < result?[i].length; j++) {
                             temp.add(MatJip.fromJson(result?[i][j]));
                           }
-                          bookmark[count][i] = temp;
+                          bookmark[i] = temp;
                           temp = [];
                         }
 
@@ -178,6 +178,14 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                         // }
                         Get.bottomSheet(BookmarkBottomsheet(
                           bookmark: bookmark,
+                          matjip: MatJip(
+                            place_name: widget.place_name,
+                            x: widget.x,
+                            y: widget.y,
+                            address: widget.address,
+                            category: widget.category,
+                          ),
+                          checkBookmarkRegister: widget.checkBookmarkRegister,
                         ));
                       },
                       icon: widget.isRegister

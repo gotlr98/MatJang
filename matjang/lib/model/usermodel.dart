@@ -7,8 +7,8 @@ enum SocialType { Kakao, Apple, Guest }
 class UserModel with ChangeNotifier {
   String? email;
   SocialType type = SocialType.Guest;
-  List<MatJip> matjipList = [];
-  List<MatJip> get _matjipList => matjipList;
+  Map<String, List<MatJip>> matjipList = {};
+  Map<String, List<MatJip>> get _matjipList => matjipList;
   String? get _email => email;
   SocialType get _type => type;
   Map<String, Map<String, double>> review = {};
@@ -25,12 +25,12 @@ class UserModel with ChangeNotifier {
     required this.type,
   });
 
-  void addList(MatJip matjip) {
-    matjipList.add(matjip);
+  void addList(MatJip matjip, String bookmark) {
+    matjipList[bookmark]!.add(matjip);
     notifyListeners();
   }
 
-  void getListFromFirebase(List<MatJip> matjipList) {
+  void getListFromFirebase(Map<String, List<MatJip>> matjipList) {
     this.matjipList = matjipList;
     notifyListeners();
   }
@@ -70,7 +70,7 @@ class UserModel with ChangeNotifier {
     email = "";
     follower = [];
     following = [];
-    matjipList = [];
+    matjipList = {};
     review = {};
     type = SocialType.Guest;
   }

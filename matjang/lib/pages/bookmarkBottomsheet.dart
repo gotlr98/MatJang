@@ -9,72 +9,122 @@ import '../model/matjip.dart';
 import '../model/usermodel.dart';
 
 class BookmarkBottomsheet extends StatefulWidget {
-  BookmarkBottomsheet({super.key, this.bookmark});
+  BookmarkBottomsheet(
+      {super.key, this.bookmark, this.matjip, this.checkBookmarkRegister});
 
   @override
   State<BookmarkBottomsheet> createState() => _BookmarkBottomsheetState();
 
-  List<Map<String, List<MatJip>>>? bookmark;
+  Map<String, List<MatJip>>? bookmark;
+  MatJip? matjip;
+  Map<String, bool>? checkBookmarkRegister;
+
+  init() {
+    print(checkBookmarkRegister!.keys);
+  }
 }
 
 class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (int i = 0; i < (widget.bookmark?.length ?? 0); i++)
-          for (var j in widget.bookmark?[i].keys ?? {"", ""}) ...[
+        body: SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i in widget.bookmark?.keys ?? {"", ""}) ...[
             ListTile(
-              title: Text(j),
-              subtitle: Text(
-                  "${widget.bookmark?[i][j]?.length.toString()}개" ?? "null"),
+              title: Text(i),
+              subtitle:
+                  Text("${widget.bookmark?[i]?.length.toString()}개" ?? "null"),
+              onTap: () {
+                Get.dialog(AlertDialog(
+                  title: const Text("등록하시겠습니까?"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text("취소")),
+                    TextButton(
+                        onPressed: () async {
+                          print(widget.checkBookmarkRegister?[i]);
+                          if (widget.checkBookmarkRegister?[i] ?? false) {
+                            Get.back();
+                            Get.snackbar("error", "이미 등록되어있습니다",
+                                duration: const Duration(seconds: 1));
+                            return;
+                          }
+                          await FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(
+                                  Provider.of<UserModel>(context, listen: false)
+                                      .email)
+                              .collection("matjip")
+                              .doc("bookmark")
+                              .update({
+                            i: FieldValue.arrayUnion(
+                                [MatJip().toJson(widget.matjip!)])
+                          });
+
+                          Provider.of<UserModel>(context, listen: false)
+                              .addList(widget.matjip!, i);
+
+                          Get.back();
+
+                          Get.snackbar("Success", "등록되었습니다");
+                        },
+                        child: const Text("등록하기"))
+                  ],
+                ));
+              },
             ),
           ],
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                FilledButton(
-                    onPressed: () {
-                      Get.bottomSheet(SizedBox(
-                              height: (MediaQuery.of(context).size.height) / 3,
-                              child: const RegisterBookMark()))
-                          .then((value) => () async {
-                                var snap = await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .email)
-                                    .collection("bookmark")
-                                    .get();
-                                var result = snap.docs;
-
-                                Map<String, List<MatJip>> conv = {};
-                                for (var i in result) {
-                                  if (i.id ==
-                                      Provider.of<UserModel>(context,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FilledButton(
+                      onPressed: () {
+                        Get.bottomSheet(SizedBox(
+                                height:
+                                    (MediaQuery.of(context).size.height) / 3,
+                                child: const RegisterBookMark()))
+                            .then((value) => () async {
+                                  var snap = await FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(Provider.of<UserModel>(context,
                                               listen: false)
-                                          .email) {
-                                    var temp = i.data()["matjip"];
-                                    for (var j in temp.keys) {
-                                      conv[j] = temp[j];
+                                          .email)
+                                      .collection("bookmark")
+                                      .get();
+                                  var result = snap.docs;
+
+                                  Map<String, List<MatJip>> conv = {};
+                                  for (var i in result) {
+                                    if (i.id ==
+                                        Provider.of<UserModel>(context,
+                                                listen: false)
+                                            .email) {
+                                      var temp = i.data()["matjip"];
+                                      for (var j in temp.keys) {
+                                        conv[j] = temp[j];
+                                      }
                                     }
                                   }
-                                }
-                                // widget.bookmark = conv;
-                                setState(() {});
-                              });
-                    },
-                    child: const Text("새로 추가하기")),
-              ],
-            ),
-          ],
-        )
-      ],
+                                  // widget.bookmark = conv;
+                                  setState(() {});
+                                });
+                      },
+                      child: const Text("새로 추가하기")),
+                ],
+              ),
+            ],
+          )
+        ],
+      ),
     ));
   }
 }

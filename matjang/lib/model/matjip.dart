@@ -27,6 +27,16 @@ class MatJip {
     );
   }
 
+  factory MatJip.fromDatabase(Map<String, dynamic> json) {
+    return MatJip(
+      place_name: json["place_name"],
+      x: json['x'],
+      y: json['y'],
+      address: json['address'],
+      category: json['category'],
+    );
+  }
+
   List<MatJip> matjipDatasFromJson(String json) {
     List<dynamic> parsedJson = jsonDecode(json)["documents"];
     List<MatJip> matjipdatas = [];

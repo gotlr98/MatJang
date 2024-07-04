@@ -9,9 +9,9 @@ import '../model/matjip.dart';
 import '../model/usermodel.dart';
 
 class FindFollowersPage extends StatefulWidget {
-  FindFollowersPage({super.key, this.allUserMatjipList, this.isGuest = false});
+  FindFollowersPage({super.key, this.findAllUser, this.isGuest = false});
 
-  Map<String, List<MatJip>>? allUserMatjipList = {};
+  List<String>? findAllUser = [];
   bool isGuest;
   @override
   State<FindFollowersPage> createState() => _FindFollowersPageState();
@@ -19,7 +19,7 @@ class FindFollowersPage extends StatefulWidget {
 
 class _FindFollowersPageState extends State<FindFollowersPage> {
   late List<bool> isEnabled =
-      List.filled(widget.allUserMatjipList?.keys.length ?? 0, true);
+      List.filled(widget.findAllUser?.length ?? 0, true);
   late List<bool> boolList;
   bool isVisible = false;
   bool isSearch = false;
@@ -95,7 +95,7 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
 
   @override
   Widget build(BuildContext context) {
-    int? count = widget.allUserMatjipList?.keys.length;
+    int? count = widget.findAllUser?.length;
 
     TextEditingController controller = TextEditingController();
     return Scaffold(
@@ -160,14 +160,12 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
                   shrinkWrap: true,
                   itemCount: count ?? 0,
                   itemBuilder: (context, index) {
-                    var keys = widget.allUserMatjipList?.keys.toList() ?? [];
+                    var keys = widget.findAllUser?.toList() ?? [];
 
                     return ListTile(
                         leading: const Icon(Icons.people),
                         title: Text(
                             "${keys[index].split("@")[0]} from ${keys[index].split("&").last}"),
-                        subtitle: Text(
-                            "${widget.allUserMatjipList?[keys[index]]?.length} 개 후기"),
                         trailing: Wrap(
                           children: [
                             ElevatedButton(
@@ -183,7 +181,7 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
                             ),
                             IconButton(
                                 onPressed: () {
-                                  widget.allUserMatjipList?.remove(keys[index]);
+                                  widget.findAllUser?.remove(keys[index]);
                                   setState(() {});
                                 },
                                 icon: const Icon(Icons.cancel))
@@ -205,8 +203,6 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
                         leading: const Icon(Icons.people),
                         title: Text(
                             "${keys[index].split("@")[0]} from ${keys[index].split("&").last}"),
-                        subtitle: Text(
-                            "${searchUserMatjipList[keys[index]]?.length ?? 0} 개 후기"),
                         trailing: Wrap(
                           children: [
                             ElevatedButton(
