@@ -68,7 +68,7 @@ class _BookmarkBottomsheetState extends State<BookmarkBottomsheet> {
                           });
 
                           Provider.of<UserModel>(context, listen: false)
-                              .addList(widget.matjip!, i);
+                              .addMatJipList(widget.matjip!, i);
 
                           Get.back();
 

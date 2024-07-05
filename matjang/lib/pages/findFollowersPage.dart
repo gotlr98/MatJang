@@ -40,6 +40,10 @@ class _FindFollowersPageState extends State<FindFollowersPage> {
             .collection("users")
             .doc("${Provider.of<UserModel>(context, listen: false).email}")
             .update({"following": following});
+
+        await FirebaseFirestore.instance.collection("users").doc(email).set({
+          "follower": "${Provider.of<UserModel>(context, listen: false).email}"
+        }, SetOptions(merge: true));
         Provider.of<UserModel>(context, listen: false).addFollowing(email);
         if (isSearch) {
           boolList[index] = false;

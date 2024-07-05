@@ -61,6 +61,7 @@ class _MainMapState extends State<MainMap> {
   final selectList = ["지도 둘러보기", "맛집 찾기"];
   var selectedValue = "맛집 찾기";
   List<String> following = [];
+  List<String> follower = [];
   String user_email = "";
   bool isGuest = false;
   LatLng myLocation = LatLng(0, 0);
@@ -77,6 +78,7 @@ class _MainMapState extends State<MainMap> {
         isGuest = true;
       }
       await _getUsersFollowing(Get.arguments["email"]);
+      await _getUsersFollower(Get.arguments["email"]);
       await _getUsersMatjip();
       await _getUserMatjipsReview();
       await _getUserBlockList();
@@ -115,6 +117,24 @@ class _MainMapState extends State<MainMap> {
 
         Provider.of<UserModel>(context, listen: false)
             .getFollowingFromFirebase(getFollowing);
+      }
+    }
+  }
+
+  _getUsersFollower(String email) async {
+    var snap = await FirebaseFirestore.instance.collection("users").get();
+
+    var result = snap.docs;
+    follower = [];
+    for (var i in result) {
+      if (i.id == email) {
+        var getFollower = List<String>.from(i.data()["follower"]);
+        for (var i in getFollower) {
+          follower.add(i);
+        }
+
+        Provider.of<UserModel>(context, listen: false)
+            .getFollowerFromFirebase(getFollower);
       }
     }
   }
@@ -236,6 +256,20 @@ class _MainMapState extends State<MainMap> {
     }
   }
 
+  coold2Address(LatLng lng) async {
+    var url =
+        "https://dapi.kakao.com/v2/local/geo/coord2address.json?query=x=${lng.longitude}&y=${lng.latitude}";
+
+    var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
+    var response = await http.get(Uri.parse(url), headers: header);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String nickName =
@@ -244,9 +278,12 @@ class _MainMapState extends State<MainMap> {
     return Scaffold(
       key: scaffoldKey,
       onDrawerChanged: (isOpened) {
-        setState(() {
+        setState(() async {
           if (isOpened == true) {
-            _getUsersMatjip();
+            await _getUsersMatjip();
+            await _getUserBlockList();
+            await _getUsersFollower(user_email);
+            await _getUsersFollowing(user_email);
           }
         });
       },
@@ -291,7 +328,8 @@ class _MainMapState extends State<MainMap> {
                 ),
                 accountName:
                     const Text("Hi", style: TextStyle(color: Colors.black)),
-                accountEmail: Text("$nickName 님",
+                accountEmail: Text(
+                    "$nickName 님 \nfollower ${follower.length}명    following ${following.length}명",
                     style: const TextStyle(color: Colors.black)),
                 // onDetailsPressed: () {},
                 currentAccountPicture: InkWell(
@@ -647,7 +685,33 @@ class _MainMapState extends State<MainMap> {
 
                     setState(() {});
                   },
-                  child: const Icon(Icons.search))
+                  child: const Icon(Icons.search)),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  bool serviceEnabled =
+                      await Geolocator.isLocationServiceEnabled();
+                  if (!serviceEnabled) {
+                    return Future.error('Location services are disabled.');
+                  } else {
+                    LocationPermission permission =
+                        await Geolocator.checkPermission();
+                    if (permission == LocationPermission.denied) {
+                      permission = await Geolocator.requestPermission();
+                      if (permission == LocationPermission.denied) {
+                        return Future.error('permissions are denied');
+                      }
+                    } else {
+                      Position position = await Geolocator.getCurrentPosition();
+
+                      coold2Address(
+                          LatLng(position.latitude, position.longitude));
+                      setState(() {});
+                    }
+                  }
+                },
+                child: const Icon(Icons.directions),
+              )
             ],
           ),
         ),

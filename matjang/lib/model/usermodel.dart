@@ -25,7 +25,7 @@ class UserModel with ChangeNotifier {
     required this.type,
   });
 
-  void addList(MatJip matjip, String bookmark) {
+  void addMatJipList(MatJip matjip, String bookmark) {
     matjipList[bookmark]!.add(matjip);
     notifyListeners();
   }
@@ -58,6 +58,16 @@ class UserModel with ChangeNotifier {
 
   void addFollowing(String email) {
     following.add(email);
+    notifyListeners();
+  }
+
+  void getFolloerFromFirebase(List<String> follower) {
+    this.follower = follower;
+    notifyListeners();
+  }
+
+  void addFolloer(String email) {
+    follower.add(email);
     notifyListeners();
   }
 

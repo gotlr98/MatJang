@@ -100,7 +100,12 @@ class _LoginState extends State<Login> {
                       FirebaseFirestore.instance
                           .collection("users")
                           .doc("${user?.email}&kakao")
-                          .set({"following": [], "review": {}, "block": []});
+                          .set({
+                        "following": [],
+                        "review": {},
+                        "block": [],
+                        "follower": []
+                      });
 
                       setState(() {});
 
@@ -136,7 +141,12 @@ class _LoginState extends State<Login> {
                     FirebaseFirestore.instance
                         .collection("users")
                         .doc("${user?.email}&apple")
-                        .set({"following": [], "review": {}, "block": []});
+                        .set({
+                      "following": [],
+                      "review": {},
+                      "block": [],
+                      "follower": []
+                    });
 
                     setState(() {});
 
