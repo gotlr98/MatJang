@@ -10,6 +10,7 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:matjang/model/usermodel.dart';
 import 'package:matjang/pages/findFollowersPage.dart';
 import 'package:matjang/pages/initLodingPage.dart';
+import 'package:matjang/pages/searchDirectionPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +59,9 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/searchResultPage', page: () => SearchResultPage()),
           GetPage(name: '/detailPage', page: () => DetailPage()),
           GetPage(name: '/findFollowersPage', page: () => FindFollowersPage()),
+          GetPage(
+              name: '/searchDirectionPage',
+              page: () => const SearchDirectionPage()),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
 import 'package:matjang/pages/detailPage.dart';
 import 'package:matjang/pages/findFollowersPage.dart';
+import 'package:matjang/pages/searchDirectionPage.dart';
 import 'package:matjang/pages/searchResultPage.dart';
 import 'package:matjang/pages/userOwnDetailPage.dart';
 import 'package:provider/provider.dart';
@@ -256,17 +257,25 @@ class _MainMapState extends State<MainMap> {
     }
   }
 
-  coold2Address(LatLng lng) async {
+  Future<String> coold2Address(LatLng lng) async {
     var url =
-        "https://dapi.kakao.com/v2/local/geo/coord2address.json?query=x=${lng.longitude}&y=${lng.latitude}";
+        "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${lng.longitude}&y=${lng.latitude}";
 
     var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
     var response = await http.get(Uri.parse(url), headers: header);
 
     if (response.statusCode == 200) {
-      print(response.body);
+      var temp = jsonDecode(response.body);
+      if (temp["documents"][0]["road_address"] != null) {
+        return temp["documents"][0]["road_address"];
+      } else if (temp["documents"][0] != null &&
+          temp["documents"][0]["address"]["address_name"] != null) {
+        return temp["documents"][0]["address"]["address_name"];
+      } else {
+        return "error";
+      }
     } else {
-      return;
+      return "error";
     }
   }
 
@@ -688,30 +697,37 @@ class _MainMapState extends State<MainMap> {
                   child: const Icon(Icons.search)),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: () async {
-                  bool serviceEnabled =
-                      await Geolocator.isLocationServiceEnabled();
-                  if (!serviceEnabled) {
-                    return Future.error('Location services are disabled.');
-                  } else {
-                    LocationPermission permission =
-                        await Geolocator.checkPermission();
-                    if (permission == LocationPermission.denied) {
-                      permission = await Geolocator.requestPermission();
-                      if (permission == LocationPermission.denied) {
-                        return Future.error('permissions are denied');
-                      }
+                  onPressed: () async {
+                    bool serviceEnabled =
+                        await Geolocator.isLocationServiceEnabled();
+                    if (!serviceEnabled) {
+                      return Future.error('Location services are disabled.');
                     } else {
-                      Position position = await Geolocator.getCurrentPosition();
+                      LocationPermission permission =
+                          await Geolocator.checkPermission();
+                      if (permission == LocationPermission.denied) {
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied) {
+                          return Future.error('permissions are denied');
+                        }
+                      } else {
+                        Position position =
+                            await Geolocator.getCurrentPosition();
 
-                      coold2Address(
-                          LatLng(position.latitude, position.longitude));
-                      setState(() {});
+                        // coold2Address(
+                        //     LatLng(position.latitude, position.longitude));
+
+                        var result =
+                            await coold2Address(LatLng(37.5571, 127.0051));
+
+                        print(result);
+                        Get.toNamed("/searchDirectionPage",
+                            arguments: {"from": result});
+                        setState(() {});
+                      }
                     }
-                  }
-                },
-                child: const Icon(Icons.directions),
-              )
+                  },
+                  child: const Icon(Icons.directions))
             ],
           ),
         ),
