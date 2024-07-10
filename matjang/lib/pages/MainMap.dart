@@ -657,15 +657,17 @@ class _MainMapState extends State<MainMap> {
 
                     selectedValue = "지도 둘러보기";
 
-                    Get.bottomSheet(ConstrainedBox(
-                            constraints: BoxConstraints(
-                                maxHeight: (4 / 5) *
-                                    MediaQuery.of(context).size.height),
-                            child: SearchResultPage(matjip_list: matjipList)))
-                        .then((value) {
-                      center = LatLng(double.parse(value["touch_result"].y),
-                          double.parse(value["touch_result"].x));
-                      mapController.setCenter(center);
+                    Get.bottomSheet(SizedBox(
+                      height: (MediaQuery.of(context).size.height) * (3 / 4),
+                      child: SearchResultPage(
+                        matjip_list: matjipList,
+                      ),
+                    )).then((value) {
+                      if (value != null) {
+                        center = LatLng(double.parse(value["touch_result"].y),
+                            double.parse(value["touch_result"].x));
+                        mapController.setCenter(center);
+                      }
 
                       setState(() {});
                     });

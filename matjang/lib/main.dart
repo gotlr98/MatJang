@@ -60,8 +60,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/detailPage', page: () => DetailPage()),
           GetPage(name: '/findFollowersPage', page: () => FindFollowersPage()),
           GetPage(
-              name: '/searchDirectionPage',
-              page: () => const SearchDirectionPage()),
+              name: '/searchDirectionPage', page: () => SearchDirectionPage()),
         ],
       ),
     );
