@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:http/http.dart' as http;
+import 'package:matjang/controller/MainMapController.dart';
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/pages/detailBottomSheet.dart';
 import 'package:matjang/pages/detailPage.dart';
@@ -67,25 +68,7 @@ class _MainMapState extends State<MainMap> {
   bool isGuest = false;
   LatLng myLocation = LatLng(0, 0);
   List<MatJip> tempConv = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      user_email = Get.arguments["email"];
-      if (Provider.of<UserModel>(context, listen: false).getSocialType() ==
-          "guest") {
-        isGuest = true;
-      }
-      await _getUsersFollowing(Get.arguments["email"]);
-      await _getUsersFollower(Get.arguments["email"]);
-      await _getUsersMatjip();
-      await _getUserMatjipsReview();
-      await _getUserBlockList();
-    });
-    setState(() {});
-  }
+  MainMapController mainmapController = MainMapController();
 
   _getUserBlockList() async {
     var snap = await FirebaseFirestore.instance.collection("users").get();
@@ -219,6 +202,28 @@ class _MainMapState extends State<MainMap> {
     }
   }
 
+  Future<String> coold2Address(LatLng lng) async {
+    var url =
+        "https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${lng.longitude}&y=${lng.latitude}";
+
+    var header = {"Authorization": "KakaoAK ${dotenv.env["REST_API_KEY"]}"};
+    var response = await http.get(Uri.parse(url), headers: header);
+
+    if (response.statusCode == 200) {
+      var temp = jsonDecode(response.body);
+      if (temp["documents"][0]["road_address"] != null) {
+        return temp["documents"][0]["road_address"];
+      } else if (temp["documents"][0] != null &&
+          temp["documents"][0]["address"]["address_name"] != null) {
+        return temp["documents"][0]["address"]["address_name"];
+      } else {
+        return "error";
+      }
+    } else {
+      return "error";
+    }
+  }
+
   coord2Category(LatLng lng) async {
     var url =
         "https://dapi.kakao.com/v2/local/search/category.json?category_group_code=FD6&x=${lng.longitude}&y=${lng.latitude}&radius=1000";
@@ -255,6 +260,25 @@ class _MainMapState extends State<MainMap> {
       isEnd = true;
       page += 1;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      user_email = Get.arguments["email"];
+      if (Provider.of<UserModel>(context, listen: false).getSocialType() ==
+          "guest") {
+        isGuest = true;
+      }
+      await _getUsersFollowing(Get.arguments["email"]);
+      await _getUsersFollower(Get.arguments["email"]);
+      await _getUsersMatjip();
+      await _getUserMatjipsReview();
+      await _getUserBlockList();
+    });
+    setState(() {});
   }
 
   @override

@@ -2,11 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:matjang/model/matjip.dart';
 import 'package:matjang/model/usermodel.dart';
 import 'package:matjang/pages/bookmarkBottomsheet.dart';
 import 'package:provider/provider.dart';
+
+import '../controller/SearchResultPageController.dart';
+import 'searchDirectionPage.dart';
 
 class DetailBottomSheet extends StatefulWidget {
   DetailBottomSheet(
@@ -33,6 +38,7 @@ class DetailBottomSheet extends StatefulWidget {
 }
 
 class _DetailBottomSheetState extends State<DetailBottomSheet> {
+  SearchResultPageController controller = SearchResultPageController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,7 +199,33 @@ class _DetailBottomSheetState extends State<DetailBottomSheet> {
                       icon: widget.isRegister
                           ? const Icon(Icons.check)
                           : const Icon(Icons.bookmark)),
-                )
+                ),
+                IconButton(
+                    onPressed: () async {
+                      LocationPermission permission =
+                          await Geolocator.checkPermission();
+                      if (permission == LocationPermission.denied) {
+                        permission = await Geolocator.requestPermission();
+                        if (permission == LocationPermission.denied) {
+                          return Future.error('permissions are denied');
+                        }
+                      } else {
+                        Position position =
+                            await Geolocator.getCurrentPosition();
+
+                        // await controller.searchDirection(LatLng(position.latitude, position.longitude), LatLng(double.parse(widget.y!), double.parse(widget.x!)));
+                        await controller.searchDirection(
+                            LatLng(37.4826364, 126.501144),
+                            LatLng(double.parse(widget.y!),
+                                double.parse(widget.x!)));
+
+                        Get.to(() => SearchDirectionPage(
+                            polylines: controller.polylines,
+                            duration: controller.duration));
+                        setState(() {});
+                      }
+                    },
+                    icon: const Icon(Icons.directions))
               ],
             )
           ],
