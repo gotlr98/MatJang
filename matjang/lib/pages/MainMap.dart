@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
@@ -277,6 +278,21 @@ class _MainMapState extends State<MainMap> {
       await _getUsersMatjip();
       await _getUserMatjipsReview();
       await _getUserBlockList();
+
+      String yourDomain = "matjang";
+
+      DynamicLinkParameters dynamicLinkParams = DynamicLinkParameters(
+        uriPrefix: "https://$yourDomain.page.link",
+        link: Uri.parse("https://$yourDomain.page.link/test"),
+        iosParameters: const IOSParameters(
+          bundleId: "com.example.matjang",
+        ),
+      );
+      ShortDynamicLink dynamicLink =
+          await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+
+      String url = dynamicLink.shortUrl.toString();
+      print(url);
     });
     setState(() {});
   }
@@ -288,15 +304,14 @@ class _MainMapState extends State<MainMap> {
             .split("@")[0];
     return Scaffold(
       key: scaffoldKey,
-      onDrawerChanged: (isOpened) {
-        setState(() async {
-          if (isOpened == true) {
-            await _getUsersMatjip();
-            await _getUserBlockList();
-            await _getUsersFollower(user_email);
-            await _getUsersFollowing(user_email);
-          }
-        });
+      onDrawerChanged: (isOpened) async {
+        if (isOpened == true) {
+          await _getUsersMatjip();
+          await _getUserBlockList();
+          await _getUsersFollower(user_email);
+          await _getUsersFollowing(user_email);
+        }
+        setState(() {});
       },
       appBar: AppBar(
         title: const Text(
